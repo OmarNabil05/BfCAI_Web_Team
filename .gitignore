@@ -1,0 +1,19 @@
+
+# XAMPP and system files
+.DS_Store
+Thumbs.db
+*.log
+
+
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*~
+*.swp
+*.swo
+*.tmp
