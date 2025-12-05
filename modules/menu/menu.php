@@ -1,15 +1,13 @@
 <?php
-// Include database connection
 require_once '../../config/db.php';
 
-// Fetch all categories
+
 $categories_query = "SELECT * FROM categories ORDER BY name ASC";
 $categories_result = $conn->query($categories_query);
 
-// Get selected category (default to first category or 'all')
+
 $selected_category = isset($_GET['category']) ? (int)$_GET['category'] : 0;
 
-// Fetch items based on selected category
 if ($selected_category > 0) {
     $items_query = "SELECT i.*, c.name as category_name 
                     FROM items i 
@@ -21,7 +19,6 @@ if ($selected_category > 0) {
     $stmt->execute();
     $items_result = $stmt->get_result();
 } else {
-    // Show all items
     $items_query = "SELECT i.*, c.name as category_name 
                     FROM items i 
                     JOIN categories c ON i.category_id = c.id 
@@ -45,55 +42,6 @@ if ($selected_category > 0) {
       padding: 0;
     }
 
-    /* Navigation Bar */
-    .navbar {
-      background-color: #1a1a1a;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #333;
-    }
-
-    .navbar-brand {
-      color: #f0c040 !important;
-      font-size: 1.5rem;
-      font-weight: bold;
-      font-family: 'Georgia', serif;
-    }
-
-    .navbar-nav .nav-link {
-      color: #f0f0f0 !important;
-      margin: 0 1rem;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .navbar-nav .nav-link:hover,
-    .navbar-nav .nav-link.active {
-      color: #f0c040 !important;
-    }
-
-    .btn-login {
-      color: #f0f0f0 !important;
-      border: none;
-      background: transparent;
-      margin-right: 0.5rem;
-    }
-
-    .btn-signup {
-      background-color: #f0c040;
-      color: #1a1a1a !important;
-      padding: 0.5rem 1.5rem;
-      border-radius: 50px;
-      border: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-signup:hover {
-      background-color: #ffdb70;
-      transform: scale(1.05);
-    }
-    
-    /* Menu Container */
     .menu-container {
       max-width: 64rem;
       margin: 0 auto;
@@ -135,7 +83,6 @@ if ($selected_category > 0) {
       line-height: 1.6;
     }
 
-    /* Menu Buttons */
     .menu-buttons {
       display: flex;
       justify-content: center;
@@ -172,7 +119,6 @@ if ($selected_category > 0) {
       transform: scale(0.97);
     }
 
-    /* Product Grid */
     .products-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -286,40 +232,6 @@ if ($selected_category > 0) {
 </head>
 <body>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Pizza Fiesta</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="#">Menu</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Services</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
-          </li>
-        </ul>
-        <div class="d-flex">
-          <button class="btn btn-login">Login</button>
-          <button class="btn btn-signup">Sign Up</button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Menu Header -->
   <div class="menu-container">
     <h1 class="mb-3">OUR MENU</h1>
 
@@ -336,7 +248,6 @@ if ($selected_category > 0) {
     </p>
   </div>
 
-  <!-- Category Buttons -->
   <div class="container text-center">
     <div class="menu-buttons">
       <button class="btn-custom <?php echo $selected_category == 0 ? 'active' : ''; ?>" 
@@ -355,23 +266,20 @@ if ($selected_category > 0) {
     </div>
   </div>
 
-  <!-- Products Grid -->
   <div class="products-container">
     <div class="row">
       <?php 
       if ($items_result && $items_result->num_rows > 0) {
           while ($item = $items_result->fetch_assoc()) {
-              // Get the first photo from the photos field (if multiple photos are comma-separated)
               $photos = $item['photos'] ? explode(',', $item['photos']) : ['placeholder.jpg'];
               $main_photo = trim($photos[0]);
               
-              // Truncate description to about 80 characters
               $description = $item['description'];
               if (strlen($description) > 80) {
                   $description = substr($description, 0, 77) . '...';
               }
       ?>
-      <!-- Product: <?php echo htmlspecialchars($item['name']); ?> -->
+       <?php echo htmlspecialchars($item['name']); ?> 
       <div class="col-lg-3 col-md-6">
         <div class="product-card">
           <img src="image/<?php echo htmlspecialchars($main_photo); ?>" 
@@ -400,7 +308,7 @@ if ($selected_category > 0) {
       ?>
     </div>
   </div>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/script.js"></script>
 </body>
