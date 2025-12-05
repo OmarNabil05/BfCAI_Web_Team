@@ -125,13 +125,29 @@ if ($selected_category > 0) {
       padding: 2rem 1rem 4rem 1rem;
     }
 
+    .products-container .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -0.75rem;
+    }
+
+    .products-container .col-lg-4,
+    .products-container .col-md-6 {
+      display: flex;
+      padding: 0 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
     .product-card {
       background-color: #1a1a1a;
       border-radius: 10px;
       overflow: hidden;
       transition: transform 0.3s ease;
-      margin-bottom: 2rem;
       position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     .product-card:hover {
@@ -144,11 +160,15 @@ if ($selected_category > 0) {
       object-fit: cover;
       border-radius: 50%;
       padding: 1rem;
+      flex-shrink: 0;
     }
 
     .product-info {
-      padding: 1.5rem;
+      padding: 0.5rem 1.5rem 1rem 1.5rem;
       text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .product-name {
@@ -156,6 +176,12 @@ if ($selected_category > 0) {
       font-weight: bold;
       color: #f0f0f0;
       margin-bottom: 1rem;
+      height: 3.5em;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .product-description {
@@ -163,14 +189,19 @@ if ($selected_category > 0) {
       font-size: 0.9rem;
       line-height: 1.5;
       margin-bottom: 1rem;
-      min-height: 60px;
+      height: 4.5em;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
     }
 
     .product-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 1rem 1rem 1rem;
+      padding: 0 1.5rem 1.5rem 1.5rem;
+      margin-top: auto;
     }
 
     .product-price {
@@ -204,7 +235,7 @@ if ($selected_category > 0) {
 
     .zoom-icon {
       position: absolute;
-      bottom: 280px;
+      top: 200px;
       right: 20px;
       background-color: rgba(240, 192, 64, 0.9);
       width: 40px;
@@ -215,6 +246,7 @@ if ($selected_category > 0) {
       justify-content: center;
       cursor: pointer;
       transition: all 0.3s ease;
+      z-index: 10;
     }
 
     .zoom-icon:hover {
@@ -279,8 +311,8 @@ if ($selected_category > 0) {
                   $description = substr($description, 0, 77) . '...';
               }
       ?>
-       <?php echo htmlspecialchars($item['name']); ?> 
-      <div class="col-lg-3 col-md-6">
+      <!-- Product: <?php echo htmlspecialchars($item['name']); ?> -->
+      <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="product-card">
           <img src="image/<?php echo htmlspecialchars($main_photo); ?>" 
                alt="<?php echo htmlspecialchars($item['name']); ?>" 
