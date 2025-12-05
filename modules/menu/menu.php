@@ -161,6 +161,7 @@ if ($selected_category > 0) {
       border-radius: 50%;
       padding: 1rem;
       flex-shrink: 0;
+      aspect-ratio: 1/1;
     }
 
     .product-info {
