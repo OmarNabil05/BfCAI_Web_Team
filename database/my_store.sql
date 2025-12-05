@@ -171,14 +171,6 @@ INSERT INTO `order_items` (`id`, `order_id`, `item_id`, `quantity`) VALUES
 (32, 10, 3, 1),
 (33, 10, 23, 1),
 (34, 10, 18, 1);
-
-INSERT INTO `order_items` (`id`, `order_id`, `item_id`, `quantity`) VALUES
-(1, 1, 1, 1),
-(2, 1, 4, 2),
-(3, 2, 3, 1),
-(4, 3, 2, 1),
-(5, 3, 4, 3);
-
 -- --------------------------------------------------------
 
 --
