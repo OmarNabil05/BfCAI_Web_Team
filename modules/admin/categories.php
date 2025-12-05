@@ -95,7 +95,7 @@ $result = $conn->query($sql);
                 <span>👥</span> Users
             </a>
             <a class="nav-link" href="products.php">
-                <span>📦</span> Products
+                <span>🍔</span> Food Items
             </a>
             <a class="nav-link active" href="categories.php">
                 <span>📁</span> Categories

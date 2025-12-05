@@ -106,7 +106,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                 <span>👥</span> Users
             </a>
             <a class="nav-link active" href="products.php">
-                <span>📦</span> Products
+                <span>🍔</span> Food Items
             </a>
             <a class="nav-link" href="categories.php">
                 <span>📁</span> Categories

@@ -145,7 +145,7 @@ $recent_users = $conn->query($recent_users_sql);
                 <span>👥</span> Users
             </a>
             <a class="nav-link" href="products.php">
-                <span>📦</span> Products
+                <span>🍔</span> Food Items
             </a>
             <a class="nav-link" href="categories.php">
                 <span>📁</span> Categories
@@ -296,8 +296,8 @@ $recent_users = $conn->query($recent_users_sql);
             <div class="col-md-3">
                 <a href="products.php" style="text-decoration: none;">
                     <div class="stats-card text-center">
-                        <div style="font-size: 32px; margin-bottom: 10px;">📦</div>
-                        <div style="font-weight: 600;">Manage Products</div>
+                        <div style="font-size: 32px; margin-bottom: 10px;">🍔</div>
+                        <div style="font-weight: 600;">Manage Food Items</div>
                     </div>
                 </a>
             </div>
