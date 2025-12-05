@@ -125,6 +125,13 @@ INSERT INTO `orders` (`id`, `user_id`, `status`, `created_at`) VALUES
 -- Table structure for table `order_items`
 --
 
+CREATE TABLE `order_items` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `order_id` int(10) UNSIGNED NOT NULL,
+  `item_id` int(10) UNSIGNED NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Dumping data for table `order_items`
 --
@@ -217,20 +224,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
--- Indexes for table `orders`
 --
--- AUTO_INCREMENT for table `items`
+-- Indexes for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
---
--- Indexes for table `order_items`
---
-ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `item_id` (`item_id`);
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `users`
@@ -243,17 +249,17 @@ ALTER TABLE `users`
 --
 
 --
+--
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 --
 -- AUTO_INCREMENT for table `orders`
 --
