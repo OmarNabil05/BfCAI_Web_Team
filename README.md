@@ -55,7 +55,7 @@ Web_project/
 
 ### 4. Access the Application
 
-Open in browser: `http://localhost/Web_project/`
+Open in browser: `http://localhost/bfcai_web_team/`
 
 ## Working on Features (Team Members)
 
