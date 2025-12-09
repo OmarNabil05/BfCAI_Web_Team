@@ -1,6 +1,6 @@
 <?php
 require_once '../../config/db.php';
-session_start();
+// session_start();
 
 // AJAX POST request for profile update
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {

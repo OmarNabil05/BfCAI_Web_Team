@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: ../../index.php?success=Welcome Admin " . $user['name']);
             } else {
                 // Regular user
-                header("Location: ../../index.php?success=Welcome " . $user['name']);
+                header("Location: ../restaurant/menu.php?success=Welcome " . $user['name']);
             }
             exit();
         } else {
