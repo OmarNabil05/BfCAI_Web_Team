@@ -1,7 +1,7 @@
 <?php
 // cart.php
 require_once '../../config/db.php';
-session_start();
+// session_start();
 include("Navbar.php");
 
 $user_id = $_SESSION['user_id'];

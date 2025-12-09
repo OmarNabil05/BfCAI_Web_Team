@@ -1,6 +1,6 @@
 <?php
 require_once '../../config/db.php';
-session_start();
+
 include("Navbar.php");
 
 if (!isset($_SESSION['user_id'])) {
