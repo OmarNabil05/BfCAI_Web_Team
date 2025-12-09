@@ -27,7 +27,23 @@ $recent_users = $conn->query($recent_users_sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - My Store</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
+        :root {
+            --dark-bg: #1a1a1a;
+            --card-bg: #242424;
+            --sidebar-bg: #0f0f0f;
+            --gold: #f0c040;
+            --border-color: #333;
+            --text-light: #f0f0f0;
+            --text-muted: #b0b0b0;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -35,13 +51,14 @@ $recent_users = $conn->query($recent_users_sql);
         }
 
         body {
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            font-family: Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* Sidebar Styles */
         .sidebar {
-            background-color: #0f0f0f;
+            background-color: var(--sidebar-bg);
             min-height: 100vh;
             position: fixed;
             left: 0;
@@ -49,7 +66,7 @@ $recent_users = $conn->query($recent_users_sql);
             width: 250px;
             padding-top: 20px;
             transition: left 0.3s;
-            border-right: 1px solid #333;
+            border-right: 1px solid var(--border-color);
             z-index: 1000;
         }
 
@@ -61,30 +78,34 @@ $recent_users = $conn->query($recent_users_sql);
             padding: 20px;
             font-size: 24px;
             font-weight: bold;
-            color: #f0c040;
-            border-bottom: 1px solid #333;
+            color: var(--gold);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .sidebar .nav-link {
-            color: #b0b0b0;
+            color: var(--text-muted);
             padding: 12px 20px;
             margin: 5px 10px;
             border-radius: 8px;
             transition: all 0.3s;
-            text-decoration: none;
-            display: block;
         }
 
         .sidebar .nav-link:hover {
-            background-color: #242424;
-            color: #f0c040;
+            background-color: var(--card-bg);
+            color: var(--gold);
         }
 
         .sidebar .nav-link.active {
-            background-color: #f0c040;
-            color: #1a1a1a;
+            background-color: var(--gold);
+            color: var(--dark-bg);
         }
 
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Main Content */
         .main-content {
             margin-left: 250px;
             padding: 20px;
@@ -96,86 +117,28 @@ $recent_users = $conn->query($recent_users_sql);
             margin-left: 0;
         }
 
+        /* Top Navigation Bar */
+        .top-navbar {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+        }
+
         .menu-toggle {
             background: transparent;
-            border: 2px solid #f0c040;
-            color: #f0c040;
+            border: 2px solid var(--gold);
+            color: var(--gold);
             font-size: 20px;
-            cursor: pointer;
             padding: 8px 16px;
             border-radius: 5px;
             transition: all 0.3s;
         }
 
         .menu-toggle:hover {
-            background-color: #f0c040;
-            color: #1a1a1a;
-        }
-
-        .topbar {
-            background-color: #242424;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .topbar h4 {
-            color: #f0f0f0;
-            margin: 0;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f0c040 0%, #ff9800 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .stats-card {
-            background-color: #242424;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            transition: all 0.3s;
-        }
-
-        .stats-card:hover {
-            transform: translateY(-4px);
-            border-color: #f0c040;
-            box-shadow: 0 8px 20px rgba(240, 192, 64, 0.2);
-        }
-
-        .stats-card-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stats-info h2 {
-            color: #f0f0f0;
-            font-size: 2em;
-            margin-top: 5px;
-        }
-
-        .stats-info .label {
-            color: #b0b0b0;
-            font-size: 14px;
+            background-color: var(--gold);
+            color: var(--dark-bg);
         }
 
         .stats-icon {
@@ -193,51 +156,89 @@ $recent_users = $conn->query($recent_users_sql);
         .icon-purple { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
         .icon-pink { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
 
-        .data-table {
-            background-color: #242424;
-            border: 1px solid #333;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold) 0%, #ff9800 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        .stats-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 24px;
+            transition: all 0.3s;
+            color: var(--text-light);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .stats-card h2 {
+            color: #fdfdfd;
+            font-size: 2.25rem;
+        }
+
+        .stats-card .text-muted {
+            color: rgba(240, 240, 240, 0.65) !important;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-top: 24px;
         }
 
         .data-table h5 {
-            color: #f0c040;
+            color: var(--gold);
             margin-bottom: 20px;
             font-size: 1.3em;
         }
 
-        table {
+        .table {
+            color: var(--text-light);
             width: 100%;
             border-collapse: collapse;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        thead {
-            background-color: #1a1a1a;
-        }
-
-        th {
+        .table thead th {
+            background-color: var(--sidebar-bg);
+            color: var(--gold);
             padding: 12px;
             text-align: left;
-            color: #f0c040;
             font-weight: 600;
             font-size: 12px;
             text-transform: uppercase;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid var(--border-color);
         }
 
-        td {
+        .table tbody td {
             padding: 16px 12px;
-            color: #f0f0f0;
-            border-bottom: 1px solid #333;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        tbody tr {
+        .table tbody tr {
             transition: background-color 0.2s;
         }
 
-        tbody tr:hover {
-            background-color: #1a1a1a;
+        .table tbody tr:hover {
+            background-color: var(--sidebar-bg);
         }
 
         .user-cell {
@@ -359,105 +360,113 @@ $recent_users = $conn->query($recent_users_sql);
 </head>
 <body>
     <!-- Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="brand">
-            🛒 My Store
+            <i class="bi bi-shop"></i> foodie
         </div>
-        <nav>
+        <nav class="nav flex-column">
             <a class="nav-link active" href="index.php">
-                <span>📊</span> Dashboard
+                <i class="bi bi-speedometer2"></i> Dashboard
             </a>
             <a class="nav-link" href="users.php">
-                <span>👥</span> Users
+                <i class="bi bi-people"></i> Users
             </a>
             <a class="nav-link" href="products.php">
-                <span>🍔</span> Food Items
+                <i class="bi bi-box-seam"></i> Food Items
             </a>
             <a class="nav-link" href="categories.php">
-                <span>📁</span> Categories
+                <i class="bi bi-tags"></i> Categories
             </a>
             <a class="nav-link" href="orders.php">
-                <span>🛍️</span> Orders
+                <i class="bi bi-cart-check"></i> Orders
             </a>
             <a class="nav-link" href="../../index.php">
-                <span>🏠</span> Home
+                <i class="bi bi-house-door"></i> Home
             </a>
             <a class="nav-link" href="../auth/logout.php">
-                <span>🚪</span> Logout
+                <i class="bi bi-box-arrow-right"></i> Logout
             </a>
         </nav>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Bar -->
-        <div class="topbar">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <button class="menu-toggle" onclick="toggleSidebar()">
-                    ☰
+    <div class="main-content" id="mainContent">
+        <!-- Top Navbar -->
+        <div class="top-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <button class="menu-toggle btn" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
                 </button>
-                <h4>Dashboard</h4>
+                <h4 class="mb-0">Dashboard</h4>
             </div>
-            <div class="user-avatar">
-                <?php echo strtoupper(substr($admin_name, 0, 1)); ?>
+            <div>
+                <span class="text-muted">Welcome, <?php echo htmlspecialchars($admin_name); ?></span>
             </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="row">
-            <div class="stats-card">
-                <div class="stats-card-content">
-                    <div class="stats-info">
-                        <div class="label">Total Users</div>
-                        <h2><?php echo number_format($users_count); ?></h2>
-                    </div>
-                    <div class="stats-icon icon-blue">
-                        👥
-                    </div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-card-content">
-                    <div class="stats-info">
-                        <div class="label">Total Orders</div>
-                        <h2><?php echo number_format($orders_count); ?></h2>
-                    </div>
-                    <div class="stats-icon icon-green">
-                        🛒
+        <div class="row g-4 mt-3">
+            <div class="col-md-6 col-xl-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted mb-1" style="font-size: 14px;">Total Users</div>
+                            <h2 class="mb-0"><?php echo number_format($users_count); ?></h2>
+                        </div>
+                        <div class="stats-icon icon-blue">
+                            <i class="bi bi-people"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="stats-card">
-                <div class="stats-card-content">
-                    <div class="stats-info">
-                        <div class="label">Categories</div>
-                        <h2><?php echo number_format($categories_count); ?></h2>
-                    </div>
-                    <div class="stats-icon icon-purple">
-                        📁
+            <div class="col-md-6 col-xl-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted mb-1" style="font-size: 14px;">Total Orders</div>
+                            <h2 class="mb-0"><?php echo number_format($orders_count); ?></h2>
+                        </div>
+                        <div class="stats-icon icon-green">
+                            <i class="bi bi-cart-check"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="stats-card">
-                <div class="stats-card-content">
-                    <div class="stats-info">
-                        <div class="label">Available Products</div>
-                        <h2><?php echo number_format($products_count); ?></h2>
+            <div class="col-md-6 col-xl-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted mb-1" style="font-size: 14px;">Categories</div>
+                            <h2 class="mb-0"><?php echo number_format($categories_count); ?></h2>
+                        </div>
+                        <div class="stats-icon icon-purple">
+                            <i class="bi bi-tags"></i>
+                        </div>
                     </div>
-                    <div class="stats-icon icon-pink">
-                        🍔
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted mb-1" style="font-size: 14px;">Food Items</div>
+                            <h2 class="mb-0"><?php echo number_format($products_count); ?></h2>
+                        </div>
+                        <div class="stats-icon icon-pink">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Recent Users Table -->
-        <div class="data-table">
-            <h5>Recent Users</h5>
-            <table>
+        <div class="data-table mt-4">
+            <h5 class="mb-4">Recent Users</h5>
+            <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>NAME</th>
@@ -471,25 +480,27 @@ $recent_users = $conn->query($recent_users_sql);
                     <?php while($user = $recent_users->fetch_assoc()): ?>
                     <tr>
                         <td>
-                            <div class="user-cell">
-                                <div class="avatar">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar">
                                     <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
                                 </div>
-                                <div class="user-info">
-                                    <div class="name"><?php echo htmlspecialchars($user['name']); ?></div>
-                                    <div class="id">ID: <?php echo $user['id']; ?></div>
+                                <div>
+                                    <div style="font-weight: 500;"><?php echo htmlspecialchars($user['name']); ?></div>
+                                    <small class="text-muted">ID: <?php echo $user['id']; ?></small>
                                 </div>
                             </div>
                         </td>
                         <td><?php echo htmlspecialchars($user['email']); ?></td>
                         <td>
-                            <span class="badge-active">Active</span>
-                        </td>
-                        <td class="role-text">
-                            <?php echo $user['role'] == 1 ? 'Admin' : 'Customer'; ?>
+                            <span class="badge bg-success">Active</span>
                         </td>
                         <td>
-                            <a href="users.php" class="edit-link">Edit</a>
+                            <?php echo $user['role'] == 1 ? '<span class="badge bg-warning text-dark">Admin</span>' : '<span class="badge bg-secondary">Customer</span>'; ?>
+                        </td>
+                        <td>
+                            <a href="users.php" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-pencil"></i>
+                            </a>
                         </td>
                     </tr>
                     <?php endwhile; ?>
@@ -518,10 +529,13 @@ $recent_users = $conn->query($recent_users_sql);
         </div>
     </div>
 
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('hidden');
-            document.querySelector('.main-content').classList.toggle('expanded');
+            document.getElementById('sidebar').classList.toggle('hidden');
+            document.getElementById('mainContent').classList.toggle('expanded');
         }
     </script>
 </body>

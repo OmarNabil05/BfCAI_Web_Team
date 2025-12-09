@@ -1,5 +1,4 @@
 <?php
-<?php
 session_start();
 
 // Check if user is logged in and is admin
@@ -125,6 +124,7 @@ $result = $conn->query($sql);
 
         .table {
             color: var(--text-light);
+            background-color: var(--card-bg);
         }
 
         .table thead th {
@@ -135,6 +135,7 @@ $result = $conn->query($sql);
 
         .table tbody td {
             border-color: var(--border-color);
+            background-color: var(--card-bg);
         }
 
         .table tbody tr:hover {
