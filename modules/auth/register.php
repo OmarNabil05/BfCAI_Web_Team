@@ -4,70 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - My Store</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
         .register-container {
             max-width: 500px;
-            margin: 50px auto;
+            width: 100%;
         }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 1rem;
+            color: #f0f0f0;
+        }
+
+        .menu-divider {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem 0 2rem 0;
+        }
+
+        .menu-divider .line {
+            flex: 1;
+            height: 1px;
+            background-color: #f0c040;
+            max-width: 3rem;
+        }
+
+        .menu-divider .diamond {
+            width: 0.6rem;
+            height: 0.6rem;
+            background-color: #f0c040;
+            transform: rotate(45deg);
+        }
+
+        .menu-divider .diamond.large {
+            width: 1rem;
+            height: 1rem;
+        }
+
         .card {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #242424;
+            border-radius: 10px;
+            padding: 40px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #f0f0f0;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-danger {
+            background-color: #2d1f1f;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .alert-success {
+            background-color: #1f2d1f;
+            color: #51cf66;
+            border-color: #51cf66;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f0c040;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #f0c040;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ffffff;
+            background-color: #242424;
+        }
+
+        .form-control::placeholder {
+            color: #666;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: #f0f0f0;
+            border: 2px solid #f0c040;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #f0c040;
+            border-color: #f0c040;
+            color: #1a1a1a;
+            transform: scale(1.02);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 25px 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-center a {
+            color: #f0c040;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .text-center a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .text-center p {
+            color: #b0b0b0;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="register-container">
-            <div class="card">
-                <div class="card-body">
-                    <h3 class="card-title text-center mb-4">Create Account</h3>
-                    
-                    <?php if (isset($_GET['error'])): ?>
-                        <div class="alert alert-danger" role="alert">
-                            <?php echo htmlspecialchars($_GET['error']); ?>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <form action="process_register.php" method="POST">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="phone_number" class="form-label">Phone Number</label>
-                            <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="01000000000">
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Register</button>
-                    </form>
-                    
-                    <hr>
-                    
-                    <p class="text-center mb-0">
-                        Already have an account? <a href="login.php">Login here</a>
-                    </p>
-                    <p class="text-center mt-2">
-                        <a href="../../index.php">Back to Home</a>
-                    </p>
-                </div>
+    <div class="register-container">
+        <div class="header">
+            <h1>CREATE ACCOUNT</h1>
+            <div class="menu-divider">
+                <div class="line"></div>
+                <div class="diamond"></div>
+                <div class="diamond large"></div>
+                <div class="diamond"></div>
+                <div class="line"></div>
             </div>
         </div>
+
+        <div class="card">
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php echo htmlspecialchars($_GET['error']); ?>
+                </div>
+            <?php endif; ?>
+            
+            <form action="process_register.php" method="POST">
+                <div class="form-group">
+                    <label for="name" class="form-label"> Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label"> Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone_number" class="form-label"> Phone Number</label>
+                    <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="01000000000">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label"> Password</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label"> Confirm Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            
+            <hr>
+            
+            <p class="text-center">
+                Already have an account? <a href="login.php">Login here</a>
+            </p>
+            <p class="text-center">
+                <a href="../../index.php">← Back to Home</a>
+            </p>
+        </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
