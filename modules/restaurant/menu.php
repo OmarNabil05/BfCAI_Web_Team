@@ -329,7 +329,11 @@ if ($selected_category > 0) {
           </div>
           <div class="product-footer">
             <div class="product-price">$<?php echo number_format($item['price'], 2); ?></div>
-            <button class="btn-order" onclick="alert('Order feature coming soon!')">Order</button>
+            <form action="make_order.php" method="POST">
+              <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
+              <button type="submit" class="btn-order">Order</button>
+</form>
+
           </div>
         </div>
       </div>
