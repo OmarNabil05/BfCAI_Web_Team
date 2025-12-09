@@ -1,7 +1,9 @@
 <?php
 require_once '../../config/db.php';
+<<<<<<< HEAD:modules/menu/menu.php
 
-
+=======
+include("Navbar.php");
 
 $categories_query = "SELECT * FROM categories ORDER BY name ASC";
 $categories_result = $conn->query($categories_query);
