@@ -19,20 +19,20 @@
 
   <!-- Desktop Links -->
   <div class="hidden md:flex gap-7 text-white font-bold transition-all duration-300 text-[12px] md:text-[16px]">
-    <a href="#" class="hover:text-[#fac564] transition-all duration-300">Home</a>
-    <a href="#" class="hover:text-[#fac564] transition-all duration-300">Menu</a>
+    <a href="" class="hover:text-[#fac564] transition-all duration-300">Home</a>
+    <a href="menu.php" class="hover:text-[#fac564] transition-all duration-300">Menu</a>
     <a href="#" class="hover:text-[#fac564] transition-all duration-300">Services</a>
     <a href="#" class="hover:text-[#fac564] transition-all duration-300">About</a>
     <a href="#" class="hover:text-[#fac564] transition-all duration-300">Contact</a>
   </div>
 
   <!-- Desktop Buttons -->
-  <div class="hidden md:flex gap-3 text-[12px] md:text-[16px]">
-    <button class="text-white font-bold hover:text-[#fac564] transition-all duration-300">Login</button>
-    <button
+  <div class="hidden md:flex gap-3 text-[12px] md:text-[16px] items-center">
+    <a href="../auth/login.php" class="text-white font-bold hover:text-[#fac564] transition-all duration-300">Login</a>
+    <a href="../auth/register.php"
       class="py-1 md:py-2 px-2 md:px-6 rounded-full font-bold bg-[#fac564] text-black text-nowrap transition-all duration-300 cursor-pointer">
       Sign Up
-    </button>
+    </a>
   </div>
 
   <!-- Mobile Button -->
