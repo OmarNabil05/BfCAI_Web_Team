@@ -4,15 +4,9 @@
     
     <!-- Brand & Social -->
     <div class="flex flex-col items-start gap-4">
-      <a href="#" class="text-[#fac564] text-2xl font-bold">Fizza</a>
+      <a href="#" class="text-[#fac564] text-2xl font-bold">Foodie</a>
       <p class="text-gray-400 text-sm">Your Foodie in Your service.</p>
-      <div class="flex gap-4 mt-2">
-        <a href="#" class="hover:text-[#fac564] transition"><img src="Assets/Footer/facebook.png" alt="" class="w-4"></a>
-        <a href="#" class="hover:text-[#fac564] transition"><img src="Assets/Footer/insta.png" alt="" class="w-4"></a>
-        <a href="#" class="hover:text-[#fac564] transition"><img src="Assets/Footer/twiiter.png" alt="" class="w-4"></a>
 
-
-      </div>
     </div>
 
     <!-- Quick Links -->

@@ -1,6 +1,6 @@
 <?php
 require_once '../../config/db.php';
-include("Navbar.html");
+include("Navbar.php");
 
 
 $categories_query = "SELECT * FROM categories ORDER BY name ASC";
