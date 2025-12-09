@@ -19,65 +19,373 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Categories - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background: #f5f7fa;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
         .sidebar {
-            background: #1e293b;
+            background-color: #0f0f0f;
             min-height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
             width: 250px;
             padding-top: 20px;
+            transition: left 0.3s;
+            border-right: 1px solid #333;
+            z-index: 1000;
         }
+
+        .sidebar.hidden {
+            left: -250px;
+        }
+
         .sidebar .brand {
             padding: 20px;
             font-size: 24px;
             font-weight: bold;
-            color: white;
+            color: #f0c040;
+            border-bottom: 1px solid #333;
         }
+
         .sidebar .nav-link {
-            color: #94a3b8;
+            color: #b0b0b0;
             padding: 12px 20px;
             margin: 5px 10px;
             border-radius: 8px;
             transition: all 0.3s;
+            text-decoration: none;
+            display: block;
         }
-        .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: #334155;
-            color: white;
+
+        .sidebar .nav-link:hover {
+            background-color: #242424;
+            color: #f0c040;
         }
+
+        .sidebar .nav-link.active {
+            background-color: #f0c040;
+            color: #1a1a1a;
+        }
+
         .main-content {
             margin-left: 250px;
             padding: 20px;
             transition: margin-left 0.3s;
+            min-height: 100vh;
         }
+
         .main-content.expanded {
             margin-left: 0;
         }
-        .sidebar.hidden {
-            left: -250px;
-        }
+
         .menu-toggle {
-            background: none;
-            border: none;
-            font-size: 24px;
+            background: transparent;
+            border: 2px solid #f0c040;
+            color: #f0c040;
+            font-size: 20px;
             cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s;
         }
+
+        .menu-toggle:hover {
+            background-color: #f0c040;
+            color: #1a1a1a;
+        }
+
         .topbar {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
+            background-color: #242424;
+            border: 1px solid #333;
+            border-radius: 10px;
             padding: 16px 24px;
             margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .topbar h4 {
+            color: #f0f0f0;
+            margin: 0;
+        }
+
         .data-table {
-            background: white;
+            background-color: #242424;
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #333;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-row h2 {
+            color: #f0c040;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: #1f2d1f;
+            color: #51cf66;
+            border-color: #51cf66;
+        }
+
+        .alert-danger {
+            background-color: #2d1f1f;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.7;
+            float: right;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid;
+        }
+
+        .btn-primary {
+            background-color: transparent;
+            color: #f0c040;
+            border-color: #f0c040;
+        }
+
+        .btn-primary:hover {
+            background-color: #f0c040;
+            color: #1a1a1a;
+        }
+
+        .btn-warning {
+            background-color: transparent;
+            color: #ffd43b;
+            border-color: #ffd43b;
+        }
+
+        .btn-warning:hover {
+            background-color: #ffd43b;
+            color: #1a1a1a;
+        }
+
+        .btn-danger {
+            background-color: transparent;
+            color: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff6b6b;
+            color: #1a1a1a;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #b0b0b0;
+            border-color: #b0b0b0;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b0b0b0;
+            color: #1a1a1a;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background-color: #1a1a1a;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            color: #f0c040;
+            font-weight: 600;
+            border: 1px solid #333;
+        }
+
+        td {
+            padding: 12px;
+            color: #f0f0f0;
+            border: 1px solid #333;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #1a1a1a;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #1f1f1f;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .modal-content {
+            background-color: #242424;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            color: #f0c040;
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 24px;
+            color: #f0f0f0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #333;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f0c040;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #f0c040;
+            border-radius: 5px;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: #ffffff;
+            background-color: #242424;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+        }
+
+        .mb-3 {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .topbar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
         }
     </style>
 </head>
@@ -87,7 +395,7 @@ $result = $conn->query($sql);
         <div class="brand">
             🛒 My Store
         </div>
-        <nav class="nav flex-column">
+        <nav>
             <a class="nav-link" href="index.php">
                 <span>📊</span> Dashboard
             </a>
@@ -114,95 +422,93 @@ $result = $conn->query($sql);
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="topbar d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 15px;">
                 <button class="menu-toggle" onclick="toggleSidebar()">
                     ☰
                 </button>
-                <h4 class="mb-0">Manage Categories</h4>
+                <h4>Manage Categories</h4>
             </div>
         </div>
 
         <div class="data-table">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Manage Categories</h2>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                Add New Category
-            </button>
-        </div>
-
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?php echo htmlspecialchars($_GET['success']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="header-row">
+                <h2>Manage Categories</h2>
+                <button type="button" class="btn btn-primary" onclick="openModal('addCategoryModal')">
+                    Add New Category
+                </button>
             </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_GET['error'])): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?php echo htmlspecialchars($_GET['error']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Photo</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if ($result->num_rows > 0): ?>
-                        <?php while($category = $result->fetch_assoc()): ?>
-                            <tr>
-                                <td><?php echo $category['id']; ?></td>
-                                <td><?php echo htmlspecialchars($category['name']); ?></td>
-                                <td>
-                                    <?php if ($category['photo']): ?>
-                                        <img src="uploads/<?php echo htmlspecialchars($category['photo']); ?>" alt="Category" style="max-width: 50px; max-height: 50px;">
-                                    <?php else: ?>
-                                        No image
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($category['description']); ?></td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-warning" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editCategoryModal"
-                                            onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', '<?php echo addslashes($category['photo']); ?>')">
-                                        Edit
-                                    </button>
-                                    <form method="POST" action="process_category.php" style="display:inline;">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="category_id" value="<?php echo $category['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success">
+                    <?php echo htmlspecialchars($_GET['success']); ?>
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger">
+                    <?php echo htmlspecialchars($_GET['error']); ?>
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            <?php endif; ?>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
                         <tr>
-                            <td colspan="5" class="text-center">No categories found</td>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Photo</th>
+                            <th>Description</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        <?php if ($result->num_rows > 0): ?>
+                            <?php while($category = $result->fetch_assoc()): ?>
+                                <tr>
+                                    <td><?php echo $category['id']; ?></td>
+                                    <td><?php echo htmlspecialchars($category['name']); ?></td>
+                                    <td>
+                                        <?php if ($category['photo']): ?>
+                                            <img src="uploads/<?php echo htmlspecialchars($category['photo']); ?>" alt="Category" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
+                                        <?php else: ?>
+                                            No image
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($category['description']); ?></td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-warning" 
+                                                onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', '<?php echo addslashes($category['photo']); ?>')">
+                                            Edit
+                                        </button>
+                                        <form method="POST" action="process_category.php" style="display:inline;">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="category_id" value="<?php echo $category['id']; ?>">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this category?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center">No categories found</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Add Category Modal -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal" id="addCategoryModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('addCategoryModal')">×</button>
                 </div>
                 <form method="POST" action="process_category.php" enctype="multipart/form-data">
                     <div class="modal-body">
@@ -221,7 +527,7 @@ $result = $conn->query($sql);
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addCategoryModal')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Add Category</button>
                     </div>
                 </form>
@@ -230,12 +536,12 @@ $result = $conn->query($sql);
     </div>
 
     <!-- Edit Category Modal -->
-    <div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal" id="editCategoryModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" onclick="closeModal('editCategoryModal')">×</button>
                 </div>
                 <form method="POST" action="process_category.php" enctype="multipart/form-data">
                     <div class="modal-body">
@@ -260,7 +566,7 @@ $result = $conn->query($sql);
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editCategoryModal')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -268,8 +574,15 @@ $result = $conn->query($sql);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
         function editCategory(id, name, description, photo) {
             document.getElementById('edit_category_id').value = id;
             document.getElementById('edit_name').value = name;
@@ -277,14 +590,24 @@ $result = $conn->query($sql);
             document.getElementById('edit_current_photo').value = photo;
             
             if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px;">';
+                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }
+
+            openModal('editCategoryModal');
         }
+
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('hidden');
             document.querySelector('.main-content').classList.toggle('expanded');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
         }
     </script>
 </body>
