@@ -1,21 +1,10 @@
 <?php
 require_once '../../config/db.php';
-
-include("Navbar.php");
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION["user_id"];
-
-// Fetch user info
-$result = mysqli_query($conn, "SELECT name, phone_number, email FROM users WHERE id = $user_id");
-$user = mysqli_fetch_assoc($result);
+session_start();
 
 // AJAX POST request for profile update
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
+    $user_id = $_SESSION["user_id"] ?? 0;
     $name = trim(mysqli_real_escape_string($conn, $_POST['username']));
     $phone = trim(mysqli_real_escape_string($conn, $_POST['phone']));
     $email = trim(mysqli_real_escape_string($conn, $_POST['email']));
@@ -36,9 +25,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
         }
     }
 
+    header('Content-Type: application/json');
     echo json_encode($response);
     exit;
 }
+
+// --- Normal page load ---
+include("Navbar.php");
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION["user_id"];
+
+// Fetch user info
+$result = mysqli_query($conn, "SELECT name, phone_number, email FROM users WHERE id = $user_id");
+$user = mysqli_fetch_assoc($result);
 
 // Fetch order history with item names
 $history_sql = "
@@ -51,7 +55,6 @@ ORDER BY o.created_at DESC
 ";
 $history_result = mysqli_query($conn, $history_sql);
 
-// Prepare data for table
 $order_rows = [];
 while($row = mysqli_fetch_assoc($history_result)) {
     $order_rows[] = [
@@ -64,6 +67,7 @@ while($row = mysqli_fetch_assoc($history_result)) {
 
 $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,17 +85,17 @@ $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
         <h2 class="text-2xl lg:text-3xl transition-all duration-300">My Profile</h2>
         <div class="flex lg:gap-5 gap-3 lg:items-center lg:flex-row flex-col">
             <label for="username">Name</label>
-            <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="username" value="<?php echo $user['name']; ?>">
+            <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="username" value="<?php echo $user['name']; ?>" readonly>
         </div>
         <div class="flex lg:gap-5 gap-3 lg:items-center lg:flex-row flex-col">
             <label for="phone">Phone</label>
-            <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="phone" value="<?php echo $user['phone_number']; ?>">
+            <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="phone" value="<?php echo $user['phone_number']; ?>" readonly>
         </div>
         <div class="flex lg:gap-6 gap-3 lg:items-center lg:flex-row flex-col">
             <label for="email">Email</label>
-            <input type="email" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="email" value="<?php echo $user['email']; ?>">
+            <input type="email" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="email" value="<?php echo $user['email']; ?>" readonly>
         </div>
-        <button type="submit" class="bg-[#fac564] lg:ms-16 w-72 rounded-lg py-1 cursor-pointer border text-black font-semibold border-white/20">Edit</button>
+        <button type="button" id="editBtn" class="bg-[#fac564] lg:ms-16 w-72 rounded-lg py-1 cursor-pointer border text-black font-semibold border-white/20">Edit</button>
         <input type="hidden" name="ajax" value="1">
     </form>
 
@@ -119,14 +123,54 @@ $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
 
 </div>
 
+<!-- Toast Notification -->
+<div id="toast" class="fixed top-5 right-5 px-4 py-2 rounded-lg text-white shadow-lg opacity-0 pointer-events-none transition-all duration-500 z-50"></div>
+
 <script>
-document.getElementById('profileForm').onsubmit = e => {
-    e.preventDefault();
-    var formData = new FormData(e.target);
-    fetch('', { method:'POST', body: formData })
-        .then(r => r.json())
-        .then(d => alert(d.error || d.success));
-};
+const form = document.getElementById('profileForm');
+const editBtn = document.getElementById('editBtn');
+const inputs = form.querySelectorAll('input[name]:not([type=hidden])');
+const toast = document.getElementById('toast');
+
+function showToast(message, type='success') {
+    toast.textContent = message;
+    toast.classList.remove('bg-green-500','bg-red-500');
+    toast.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500');
+    toast.style.opacity = 1;
+    toast.style.pointerEvents = 'auto';
+    setTimeout(() => {
+        toast.style.opacity = 0;
+        toast.style.pointerEvents = 'none';
+    }, 3000);
+}
+
+// Toggle edit/save
+editBtn.addEventListener('click', () => {
+    if(editBtn.textContent === 'Edit') {
+        inputs.forEach(input => input.removeAttribute('readonly'));
+        editBtn.textContent = 'Save';
+    } else {
+        // Save via AJAX
+        const formData = new FormData(form);
+        fetch('', { method:'POST', body: formData })
+            .then(r => r.text())
+            .then(text => {
+                try {
+                    const d = JSON.parse(text);
+                    if(d.error) showToast(d.error, 'error');
+                    if(d.success) {
+                        showToast(d.success, 'success');
+                        inputs.forEach(input => input.setAttribute('readonly', true));
+                        editBtn.textContent = 'Edit';
+                    }
+                } catch(err) {
+                    console.error('Invalid JSON:', text);
+                    showToast('Unexpected server response', 'error');
+                }
+            })
+            .catch(() => showToast('Network error!', 'error'));
+    }
+});
 </script>
 
 </body>
