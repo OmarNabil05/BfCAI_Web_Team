@@ -1,7 +1,6 @@
 <?php
-session_start();
 require_once '../../config/db.php';
-
+include("Navbar.php"); 
 // Detect logged in
 $isLoggedIn = isset($_SESSION['user_id']);
 
@@ -436,7 +435,6 @@ $popular_items = $conn->query($popular_items_sql);
 </head>
 <body>
 
-<?php include("Navbar.php"); ?>
 
 <!-- Hero Section -->
 <section class="hero">
@@ -554,7 +552,7 @@ $popular_items = $conn->query($popular_items_sql);
 </section>
 
 <!-- CTA Section -->
-<section class="cta">
+<section class="cta" id="cta">
     <h2>Ready to Order?</h2>
     <p>Join thousands of happy customers enjoying delicious meals every day!</p>
     <a href="menu.php" class="btn-primary">Explore Our Menu</a>

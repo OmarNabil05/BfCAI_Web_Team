@@ -1,7 +1,6 @@
 <?php
 // cart.php
 require_once '../../config/db.php';
-// session_start();
 include("Navbar.php");
 
 $user_id = $_SESSION['user_id'];
@@ -57,9 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateQuery = $pdo->prepare("UPDATE order_items SET quantity = ? WHERE order_id = ? AND item_id = ?");
             $updateQuery->execute([$new_quantity, $order_id, $item_id]);
         }
-
-        header("Location: cart.php");
-        exit();
     }
 
     // Delete order item
@@ -67,9 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $item_id = $_POST['item_id'];
         $deleteQuery = $pdo->prepare("DELETE FROM order_items WHERE order_id = ? AND item_id = ?");
         $deleteQuery->execute([$order_id, $item_id]);
-
-        header("Location: cart.php");
-        exit();
     }
 
     // Checkout
@@ -86,8 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateOrderQuery->execute([$city, $address, $order_id, $user_id]);
 
             $_SESSION['success_message'] = "Order placed successfully!";
-            header("Location: cart.php");
-            exit();
         }
     }
 }
@@ -153,7 +144,7 @@ $total = $subtotal + $delivery_fee - $discount;
                         <div class="grid grid-cols-8 gap-4 border-b border-gray-700 pt-2 pb-4 items-center">
                             <div class="col-span-2">
                                 <div class="bg-cover bg-center w-[100px] h-[100px] rounded-[10%]" 
-                                     style="background-image: url('<?php echo htmlspecialchars($item['image_url']); ?>');"></div>
+                                    style="background-image: url('<?php echo htmlspecialchars($item['image_url']); ?>');"></div>
                             </div>
                             <div class="col-span-3 px-4">
                                 <p class="font-semibold text-[12px] lg:text-[18px] "><?php echo htmlspecialchars($item['name']); ?></p>

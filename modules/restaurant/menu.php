@@ -34,14 +34,39 @@ if ($selected_category > 0) {
   <title>Our Menu - Pizza Fiesta</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #1a1a1a; 
+    @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap');
+
+body {
+      background-color: black; 
       color: #f0f0f0; 
-      font-family: Arial, sans-serif;
+      font-family: 'Josefin Sans', sans-serif;
       margin: 0;
       padding: 0;
     }
+a{
+    color: white; 
+    text-decoration: none; 
+    }
+a:hover
+{
+    color:#fac564 ;
+}
 
+.logo 
+{
+  color: #fac564; 
+}
+.navbar
+{
+  background-color:#121618 ; 
+}
+.text{
+  color:#9ca3af;
+}
+h5{
+  font-weight: 600;
+}
+  
     .menu-container {
       max-width: 64rem;
       margin: 0 auto;

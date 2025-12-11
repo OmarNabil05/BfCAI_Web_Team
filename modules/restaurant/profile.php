@@ -82,7 +82,7 @@ $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
 
     <!-- Profile Form -->
     <form id="profileForm" class="card transition-all duration-300 text-white w-80 lg:w-[500px] h-96 bg-[#121618] border border-white/20 shadow-lg rounded-lg flex flex-col justify-center items-center gap-5">
-        <h2 class="text-2xl lg:text-3xl transition-all duration-300">My Profile</h2>
+        <h2 class="text-2xl lg:text-3xl transition-all duration-300 text-[#fac564]">My Profile</h2>
         <div class="flex lg:gap-5 gap-3 lg:items-center lg:flex-row flex-col">
             <label for="username">Name</label>
             <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="username" value="<?php echo $user['name']; ?>" readonly>

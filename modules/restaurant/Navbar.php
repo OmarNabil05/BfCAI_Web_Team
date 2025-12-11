@@ -1,10 +1,7 @@
 <?php
-// Don't start session if already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
+$pdo = new PDO("mysql:host=localhost;dbname=my_store", "root", "");
 
-// Use existing $conn from db.php (MySQLi connection)
 // --- LOGOUT LOGIC ---
 if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
     unset($_SESSION['user_id']); // remove user session
@@ -19,20 +16,17 @@ $user_id = $isLoggedIn ? $_SESSION['user_id'] : null;
 // Default cart count
 $cart_count = 0;
 
-if ($isLoggedIn && isset($conn)) {
-    // SQL to get cart item count using MySQLi
-    $stmt = $conn->prepare("
+if ($isLoggedIn) {
+    // SQL to get cart item count
+    $stmt = $pdo->prepare("
         SELECT COALESCE(SUM(oi.quantity), 0) AS cart_count
         FROM orders o
         LEFT JOIN order_items oi ON oi.order_id = o.id
-        WHERE o.user_id = ?
+        WHERE o.user_id = :uid
         AND o.status = 0
     ");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $cart_count = (int)$result->fetch_row()[0];
-    $stmt->close();
+    $stmt->execute(['uid' => $user_id]);
+    $cart_count = (int)$stmt->fetchColumn();
 }
 ?>
 
@@ -44,15 +38,15 @@ if ($isLoggedIn && isset($conn)) {
 
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-<nav class="bg-[#121618] md:px-32 px-4 py-6 flex items-center justify-between relative">
-  <a href="menu.php" class="text-[#fac564] text-[18px] md:text-2xl font-bold transition-all duration-300">Foodie</a>
+<nav class="bg-[#121618] md:px-32 px-6 py-6 flex items-center justify-between relative">
+  <a href="menu.php" class="logo text-[#fac564] text-[18px] md:text-2xl font-bold transition-all duration-300">Foodie</a>
 
   <div class="hidden md:flex gap-7 text-white font-bold text-[12px] md:text-[16px]">
     <a href="home.php" class="hover:text-[#fac564]">Home</a>
-    <!-- <a href="menu.php" class="hover:text-[#fac564]">Menu</a> -->
-    <a href="#categories" class="hover:text-[#fac564]">Services</a>
+    <a href="menu.php" class="hover:text-[#fac564]">Menu</a>
+    <a href="#features" class="hover:text-[#fac564]">Services</a>
     <a href="#about" class="hover:text-[#fac564]">About</a>
-    <a href="#footer" class="hover:text-[#fac564]">Contact</a>
+    <a href="#cta" class="hover:text-[#fac564]">Contact</a>
   </div>
 
   <div class="hidden md:flex gap-6 items-center text-white font-bold text-[16px]">
