@@ -509,9 +509,6 @@ $completed_result = $conn->query($completed_sql);
             <a class="nav-link active" href="orders.php">
                 <i class="bi bi-cart-check"></i> Orders
             </a>
-            <a class="nav-link" href="../../index.php">
-                <i class="bi bi-house-door"></i> Home
-            </a>
             <a class="nav-link" href="../auth/logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>

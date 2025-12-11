@@ -1,5 +1,5 @@
 <!-- Footer Component -->
-<footer class="bg-[#121618] text-white md:px-32 px-6 py-10">
+<footer id="footer" class="bg-[#121618] text-white md:px-32 px-6 py-10">
   <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
     
     <!-- Brand & Social -->

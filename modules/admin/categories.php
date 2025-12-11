@@ -168,6 +168,10 @@ $result = $conn->query($sql);
             background-color: var(--sidebar-bg);
         }
 
+         .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        
         .menu-toggle:hover {
             background-color: #f0c040;
             color: #1a1a1a;
@@ -250,7 +254,19 @@ $result = $conn->query($sql);
             transition: all 0.3s;
             border: 2px solid;
         }
+ /* Custom Buttons */
+        .btn-gold {
+            background-color: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            font-weight: 600;
+        }
 
+        .btn-gold:hover {
+            background-color: var(--gold);
+            color: var(--dark-bg);
+            border-color: var(--gold);
+        }
         .btn-primary {
             background-color: transparent;
             color: #f0c040;
@@ -480,9 +496,6 @@ $result = $conn->query($sql);
             <a class="nav-link" href="orders.php">
                 <i class="bi bi-cart-check"></i> Orders
             </a>
-            <a class="nav-link" href="../../index.php">
-                <i class="bi bi-house-door"></i> Home
-            </a>
             <a class="nav-link" href="../auth/logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>
@@ -504,7 +517,7 @@ $result = $conn->query($sql);
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Manage Categories</h5>
-                <button type="button" class="btn btn-outline-light" onclick="openModal('addCategoryModal')">
+                <button type="button" class="btn btn-gold" onclick="openModal('addCategoryModal')">
                     <i class="bi bi-plus-circle"></i> Add New Category
                 </button>
             </div>
@@ -539,8 +552,8 @@ $result = $conn->query($sql);
                             <?php if ($result->num_rows > 0): ?>
                                 <?php while($category = $result->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?php echo $category['id']; ?></td>
-                                        <td><?php echo htmlspecialchars($category['name']); ?></td>
+                                        <td style="color: var(--text-light);"><?php echo $category['id']; ?></td>
+                                        <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['name']); ?></td>
                                         <td>
                                             <?php if ($category['photo']): ?>
                                                 <img src="uploads/<?php echo htmlspecialchars($category['photo']); ?>" alt="Category" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
@@ -548,7 +561,7 @@ $result = $conn->query($sql);
                                                 <span class="text-muted">No image</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo htmlspecialchars($category['description']); ?></td>
+                                        <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['description']); ?></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-warning" 
                                                     onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', '<?php echo addslashes($category['photo']); ?>')">
