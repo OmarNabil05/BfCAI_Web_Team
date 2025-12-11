@@ -54,6 +54,7 @@ $recent_users = $conn->query($recent_users_sql);
             background-color: var(--dark-bg);
             color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
         /* Sidebar Styles */
@@ -65,13 +66,14 @@ $recent_users = $conn->query($recent_users_sql);
             top: 0;
             width: 250px;
             padding-top: 20px;
-            transition: left 0.3s;
+            transition: transform 0.3s ease;
             border-right: 1px solid var(--border-color);
             z-index: 1000;
+            transform: translateX(0);
         }
 
         .sidebar.hidden {
-            left: -250px;
+            transform: translateX(-100%);
         }
 
         .sidebar .brand {
@@ -80,6 +82,7 @@ $recent_users = $conn->query($recent_users_sql);
             font-weight: bold;
             color: var(--gold);
             border-bottom: 1px solid var(--border-color);
+            text-align: center;
         }
 
         .sidebar .nav-link {
@@ -88,11 +91,14 @@ $recent_users = $conn->query($recent_users_sql);
             margin: 5px 10px;
             border-radius: 8px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
         }
 
         .sidebar .nav-link:hover {
             background-color: var(--card-bg);
             color: var(--gold);
+            text-decoration: none;
         }
 
         .sidebar .nav-link.active {
@@ -103,18 +109,21 @@ $recent_users = $conn->query($recent_users_sql);
         .sidebar .nav-link i {
             margin-right: 10px;
             width: 20px;
+            text-align: center;
         }
 
         /* Main Content */
         .main-content {
             margin-left: 250px;
             padding: 20px;
-            transition: margin-left 0.3s;
+            transition: margin-left 0.3s ease;
             min-height: 100vh;
+            width: calc(100% - 250px);
         }
 
         .main-content.expanded {
             margin-left: 0;
+            width: 100%;
         }
 
         /* Top Navigation Bar */
@@ -124,6 +133,11 @@ $recent_users = $conn->query($recent_users_sql);
             border-radius: 10px;
             padding: 16px 24px;
             margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .menu-toggle {
@@ -134,6 +148,12 @@ $recent_users = $conn->query($recent_users_sql);
             padding: 8px 16px;
             border-radius: 5px;
             transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
         }
 
         .menu-toggle:hover {
@@ -141,21 +161,116 @@ $recent_users = $conn->query($recent_users_sql);
             color: var(--dark-bg);
         }
 
+        /* Stats Cards */
+        .stats-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+            height: 100%;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(240, 192, 64, 0.15);
+            border-color: var(--gold);
+        }
+
+        .stats-card h2 {
+            color: var(--text-light);
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0;
+        }
+
+        .stats-card .text-muted {
+            color: var(--text-muted) !important;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
         .stats-icon {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
+            flex-shrink: 0;
         }
 
-        .icon-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-        .icon-green { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-        .icon-purple { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
-        .icon-pink { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .icon-blue { 
+            background: rgba(59, 130, 246, 0.15); 
+            color: #60a5fa;
+        }
+        .icon-green { 
+            background: rgba(34, 197, 94, 0.15); 
+            color: #4ade80;
+        }
+        .icon-purple { 
+            background: rgba(168, 85, 247, 0.15); 
+            color: #c084fc;
+        }
+        .icon-pink { 
+            background: rgba(240, 192, 64, 0.15); 
+            color: var(--gold);
+        }
 
+        /* Table Styles */
+        .data-table {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .data-table h5 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table {
+            color: var(--text-light);
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--sidebar-bg);
+            color: var(--gold);
+            padding: 16px 12px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            padding: 16px 12px;
+            color: var(--text-light);
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* User Avatar */
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -164,201 +279,228 @@ $recent_users = $conn->query($recent_users_sql);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--dark-bg);
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
-        .stats-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            transition: all 0.3s;
-            color: var(--text-light);
+        /* Badges */
+        .badge {
+            font-weight: 600;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .stats-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        .badge.bg-success {
+            background-color: rgba(34, 197, 94, 0.2) !important;
+            color: #4ade80 !important;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        .stats-card h2 {
-            color: #fdfdfd;
-            font-size: 2.25rem;
+        .badge.bg-warning {
+            background-color: rgba(240, 192, 64, 0.2) !important;
+            color: var(--gold) !important;
+            border: 1px solid rgba(240, 192, 64, 0.3);
         }
 
-        .stats-card .text-muted {
-            color: rgba(240, 240, 240, 0.65) !important;
-            letter-spacing: 0.05em;
+        .badge.bg-secondary {
+            background-color: rgba(108, 117, 125, 0.2) !important;
+            color: #adb5bd !important;
+            border: 1px solid rgba(108, 117, 125, 0.3);
         }
 
-        .data-table {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
             margin-top: 24px;
         }
 
-        .data-table h5 {
-            color: var(--gold);
-            margin-bottom: 20px;
-            font-size: 1.3em;
+        .quick-action-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
         }
 
-        .table {
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 25px rgba(240, 192, 64, 0.15);
             color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .quick-action-card .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            width: 60px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-action-card .title {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        /* Action Button */
+        .btn-outline-info {
+            border-color: #4dabf7;
+            color: #4dabf7;
+            padding: 6px 15px;
+            font-size: 14px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-outline-info:hover {
+            background-color: #4dabf7;
+            color: var(--dark-bg);
+            border-color: #4dabf7;
+        }
+
+        /* Mobile Backdrop */
+        .sidebar-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .top-navbar {
+                padding: 15px;
+            }
+            
+            .stats-card h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .stats-card {
+                padding: 20px;
+            }
+            
+            .data-table {
+                padding: 20px;
+            }
+             .table {
+            color: var(--text-light);
             background-color: var(--card-bg);
-            border-radius: 10px;
-            overflow: hidden;
         }
 
         .table thead th {
             background-color: var(--sidebar-bg);
             color: var(--gold);
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--border-color);
+            border-color: var(--border-color);
         }
 
         .table tbody td {
-            padding: 16px 12px;
-            color: var(--text-light);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .table tbody tr {
-            transition: background-color 0.2s;
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
         }
 
         .table tbody tr:hover {
             background-color: var(--sidebar-bg);
         }
 
-        .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+         .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.02);
         }
-
-        .user-cell .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-        }
-
-        .user-info .name {
-            font-weight: 500;
-            color: #f0f0f0;
-        }
-
-        .user-info .id {
-            font-size: 12px;
-            color: #b0b0b0;
-        }
-
-        .badge-active {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .role-text {
-            color: #b0b0b0;
-        }
-
-        .edit-link {
-            color: #3b82f6;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .edit-link:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 24px;
-        }
-
-        .quick-action-card {
-            background-color: #242424;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 30px 24px;
-            text-align: center;
-            transition: all 0.3s;
-            text-decoration: none;
-            color: #f0f0f0;
-        }
-
-        .quick-action-card:hover {
-            transform: translateY(-4px);
-            border-color: #f0c040;
-            box-shadow: 0 8px 20px rgba(240, 192, 64, 0.2);
-        }
-
-        .quick-action-card .icon {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .quick-action-card .title {
-            font-weight: 600;
-            color: #f0f0f0;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                left: -250px;
+   
+            .table-responsive {
+                margin: 0 -20px;
+                padding: 0 20px;
             }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .topbar {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .row {
+            
+            .quick-actions {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
+            
+            .top-navbar h4 {
+                font-size: 1.25rem;
+            }
+        }
 
-            table {
-                font-size: 12px;
+        @media (max-width: 576px) {
+            .stats-card {
+                text-align: center;
             }
+            
+            .stats-card .d-flex {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .stats-icon {
+                margin: 0 auto;
+            }
+            
+            .menu-toggle {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+            }
+        }
 
-            th, td {
-                padding: 8px;
-            }
+        /* Table responsive fix */
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="brand">
@@ -380,9 +522,6 @@ $recent_users = $conn->query($recent_users_sql);
             <a class="nav-link" href="orders.php">
                 <i class="bi bi-cart-check"></i> Orders
             </a>
-            <a class="nav-link" href="../../index.php">
-                <i class="bi bi-house-door"></i> Home
-            </a>
             <a class="nav-link" href="../auth/logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>
@@ -392,7 +531,7 @@ $recent_users = $conn->query($recent_users_sql);
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
         <!-- Top Navbar -->
-        <div class="top-navbar d-flex justify-content-between align-items-center">
+        <div class="top-navbar">
             <div class="d-flex align-items-center gap-3">
                 <button class="menu-toggle btn" onclick="toggleSidebar()">
                     <i class="bi bi-list"></i>
@@ -400,21 +539,21 @@ $recent_users = $conn->query($recent_users_sql);
                 <h4 class="mb-0">Dashboard</h4>
             </div>
             <div>
-                <span class="text-muted">Welcome, <?php echo htmlspecialchars($admin_name); ?></span>
+                <span class="text-muted">Welcome, <strong style="color: var(--gold);"><?php echo htmlspecialchars($admin_name); ?></strong></span>
             </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="row g-4 mt-3">
+        <div class="row g-4">
             <div class="col-md-6 col-xl-3">
                 <div class="stats-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted mb-1" style="font-size: 14px;">Total Users</div>
-                            <h2 class="mb-0"><?php echo number_format($users_count); ?></h2>
+                            <div class="text-muted mb-2">Total Users</div>
+                            <h2><?php echo number_format($users_count); ?></h2>
                         </div>
                         <div class="stats-icon icon-blue">
-                            <i class="bi bi-people"></i>
+                            <i class="bi bi-people-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -424,11 +563,11 @@ $recent_users = $conn->query($recent_users_sql);
                 <div class="stats-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted mb-1" style="font-size: 14px;">Total Orders</div>
-                            <h2 class="mb-0"><?php echo number_format($orders_count); ?></h2>
+                            <div class="text-muted mb-2">Total Orders</div>
+                            <h2><?php echo number_format($orders_count); ?></h2>
                         </div>
                         <div class="stats-icon icon-green">
-                            <i class="bi bi-cart-check"></i>
+                            <i class="bi bi-cart-check-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -438,11 +577,11 @@ $recent_users = $conn->query($recent_users_sql);
                 <div class="stats-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted mb-1" style="font-size: 14px;">Categories</div>
-                            <h2 class="mb-0"><?php echo number_format($categories_count); ?></h2>
+                            <div class="text-muted mb-2">Categories</div>
+                            <h2><?php echo number_format($categories_count); ?></h2>
                         </div>
                         <div class="stats-icon icon-purple">
-                            <i class="bi bi-tags"></i>
+                            <i class="bi bi-tags-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -452,11 +591,11 @@ $recent_users = $conn->query($recent_users_sql);
                 <div class="stats-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted mb-1" style="font-size: 14px;">Food Items</div>
-                            <h2 class="mb-0"><?php echo number_format($products_count); ?></h2>
+                            <div class="text-muted mb-2">Food Items</div>
+                            <h2><?php echo number_format($products_count); ?></h2>
                         </div>
                         <div class="stats-icon icon-pink">
-                            <i class="bi bi-box-seam"></i>
+                            <i class="bi bi-box-seam-fill"></i>
                         </div>
                     </div>
                 </div>
@@ -464,66 +603,90 @@ $recent_users = $conn->query($recent_users_sql);
         </div>
 
         <!-- Recent Users Table -->
-        <div class="data-table mt-4">
-            <h5 class="mb-4">Recent Users</h5>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>NAME</th>
-                        <th>EMAIL</th>
-                        <th>STATUS</th>
-                        <th>ROLE</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while($user = $recent_users->fetch_assoc()): ?>
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="user-avatar">
-                                    <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
+        <div class="data-table">
+            <h5><i class="bi bi-people"></i> Recent Users</h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Role</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($user = $recent_users->fetch_assoc()): ?>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="user-avatar">
+                                        <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500;">
+                                            <?php echo htmlspecialchars($user['name']); ?>
+                                        </div>
+                                        <small style="color: var(--text-muted);">ID: <?php echo $user['id']; ?></small>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div style="font-weight: 500;"><?php echo htmlspecialchars($user['name']); ?></div>
-                                    <small class="text-muted">ID: <?php echo $user['id']; ?></small>
-                                </div>
-                            </div>
-                        </td>
-                        <td><?php echo htmlspecialchars($user['email']); ?></td>
-                        <td>
-                            <span class="badge bg-success">Active</span>
-                        </td>
-                        <td>
-                            <?php echo $user['role'] == 1 ? '<span class="badge bg-warning text-dark">Admin</span>' : '<span class="badge bg-secondary">Customer</span>'; ?>
-                        </td>
-                        <td>
-                            <a href="users.php" class="btn btn-sm btn-outline-info">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($user['email']); ?>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Active
+                                </span>
+                            </td>
+                            <td>
+                                <?php if($user['role'] == 1): ?>
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-shield-check"></i> Admin
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-person"></i> Customer
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center">
+                                <a href="users.php" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="quick-actions">
             <a href="users.php" class="quick-action-card">
-                <div class="icon">👥</div>
+                <div class="icon" style="color: #60a5fa;">
+                    <i class="bi bi-people-fill"></i>
+                </div>
                 <div class="title">Manage Users</div>
             </a>
             <a href="products.php" class="quick-action-card">
-                <div class="icon">🍔</div>
+                <div class="icon" style="color: var(--gold);">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
                 <div class="title">Manage Food Items</div>
             </a>
             <a href="categories.php" class="quick-action-card">
-                <div class="icon">📁</div>
+                <div class="icon" style="color: #c084fc;">
+                    <i class="bi bi-tags-fill"></i>
+                </div>
                 <div class="title">Manage Categories</div>
             </a>
             <a href="orders.php" class="quick-action-card">
-                <div class="icon">📋</div>
+                <div class="icon" style="color: #4ade80;">
+                    <i class="bi bi-cart-check-fill"></i>
+                </div>
                 <div class="title">Manage Orders</div>
             </a>
         </div>
@@ -534,9 +697,48 @@ $recent_users = $conn->query($recent_users_sql);
     
     <script>
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-            document.getElementById('mainContent').classList.toggle('expanded');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            
+            sidebar.classList.toggle('show');
+            backdrop.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
         }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            
+            if (window.innerWidth <= 992 && 
+                !sidebar.contains(event.target) && 
+                !event.target.closest('.menu-toggle')) {
+                sidebar.classList.remove('show');
+                backdrop.style.display = 'none';
+            }
+        });
+        
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const sidebar = document.getElementById('sidebar');
+                const backdrop = document.getElementById('sidebarBackdrop');
+                
+                sidebar.classList.remove('show');
+                backdrop.style.display = 'none';
+            }
+        });
+        
+        // Auto-close sidebar on window resize if it's open on mobile
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            
+            if (window.innerWidth > 992 && sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+                backdrop.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>

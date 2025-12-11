@@ -503,9 +503,6 @@ while ($cat = $categories_result->fetch_assoc()) {
             <a class="nav-link" href="orders.php">
                 <i class="bi bi-cart-check"></i> Orders
             </a>
-            <a class="nav-link" href="../../index.php">
-                <i class="bi bi-house-door"></i> Home
-            </a>
             <a class="nav-link" href="../auth/logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>
@@ -531,16 +528,11 @@ while ($cat = $categories_result->fetch_assoc()) {
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-box-seam"></i> Product Management</h5>
-                <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#addProductModal">
-                    <i class="bi bi-plus-circle"></i> Add New Product
-                </button>
-            </div>
-            <div class="card-body">
                 <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
                     Add New Product
                 </button>
             </div>
-
+           
             <?php if (isset($_GET['success'])): ?>
                 <div class="alert alert-success">
                     <?php echo htmlspecialchars($_GET['success']); ?>

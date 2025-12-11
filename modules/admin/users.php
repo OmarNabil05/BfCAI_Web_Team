@@ -302,9 +302,6 @@ $result = $conn->query($sql);
             <a class="nav-link" href="orders.php">
                 <i class="bi bi-cart-check"></i> Orders
             </a>
-            <a class="nav-link" href="../../index.php">
-                <i class="bi bi-house-door"></i> Home
-            </a>
             <a class="nav-link" href="../auth/logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout
             </a>
@@ -367,17 +364,15 @@ $result = $conn->query($sql);
                             <?php if ($result->num_rows > 0): ?>
                                 <?php while($user = $result->fetch_assoc()): ?>
                                     <tr>
-                                        <td><?php echo $user['id']; ?></td>
-                                        <td>
-                                            <i class="bi bi-person-circle text-warning"></i>
+                                        <td style="color: var(--text-light);"><?php echo $user['id']; ?></td>
+                                        <td style="color: var(--text-light);">
+                                           
                                             <?php echo htmlspecialchars($user['name']); ?>
                                         </td>
-                                        <td>
-                                            <i class="bi bi-envelope"></i>
+                                        <td style="color: var(--text-light);">
                                             <?php echo htmlspecialchars($user['email']); ?>
                                         </td>
-                                        <td>
-                                            <i class="bi bi-telephone"></i>
+                                        <td style="color: var(--text-light);">
                                             <?php echo htmlspecialchars($user['phone_number']); ?>
                                         </td>
                                         <td>
