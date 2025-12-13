@@ -4,6 +4,7 @@ require_once '../../config/db.php';
 include("Navbar.php");
 
 $user_id = $_SESSION['user_id'];
+$order_completed = false;
 
 // PDO connection
 $pdo = new PDO("mysql:host=localhost;dbname=my_store", "root", "");
@@ -23,28 +24,32 @@ $orderQuery = $pdo->prepare("
 $orderQuery->execute([$user_id]);
 $order = $orderQuery->fetch(PDO::FETCH_ASSOC);
 
-// If no active order, create one
-if (!$order) {
+// If no active order AND not completed in this request
+if (!$order && !$order_completed) {
     $createOrderQuery = $pdo->prepare("
         INSERT INTO orders (user_id, status, created_at) 
         VALUES (?, 0, NOW())
     ");
     $createOrderQuery->execute([$user_id]);
-    $order_id = $pdo->lastInsertId();
+
     $orderQuery->execute([$user_id]);
     $order = $orderQuery->fetch(PDO::FETCH_ASSOC);
 }
 
-$order_id = $order['id'];
+$order_id = $order['id'] ?? null;
 
 // Handle POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $order_id) {
+
     // Update quantity
     if (isset($_POST['update_quantity'])) {
         $item_id = $_POST['item_id'];
         $action = $_POST['action'];
 
-        $checkItemQuery = $pdo->prepare("SELECT * FROM order_items WHERE order_id = ? AND item_id = ?");
+        $checkItemQuery = $pdo->prepare("
+            SELECT quantity FROM order_items 
+            WHERE order_id = ? AND item_id = ?
+        ");
         $checkItemQuery->execute([$order_id, $item_id]);
         $existingItem = $checkItemQuery->fetch(PDO::FETCH_ASSOC);
 
@@ -53,7 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($action === 'increment') $new_quantity++;
             elseif ($action === 'decrement' && $new_quantity > 1) $new_quantity--;
 
-            $updateQuery = $pdo->prepare("UPDATE order_items SET quantity = ? WHERE order_id = ? AND item_id = ?");
+            $updateQuery = $pdo->prepare("
+                UPDATE order_items 
+                SET quantity = ? 
+                WHERE order_id = ? AND item_id = ?
+            ");
             $updateQuery->execute([$new_quantity, $order_id, $item_id]);
         }
     }
@@ -61,11 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Delete order item
     if (isset($_POST['delete_item'])) {
         $item_id = $_POST['item_id'];
-        $deleteQuery = $pdo->prepare("DELETE FROM order_items WHERE order_id = ? AND item_id = ?");
+        $deleteQuery = $pdo->prepare("
+            DELETE FROM order_items 
+            WHERE order_id = ? AND item_id = ?
+        ");
         $deleteQuery->execute([$order_id, $item_id]);
     }
 
-    // Checkout
+    // Checkout 
     if (isset($_POST['checkout'])) {
         $city = $_POST['city'];
         $address = $_POST['address'];
@@ -79,19 +91,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateOrderQuery->execute([$city, $address, $order_id, $user_id]);
 
             $_SESSION['success_message'] = "Order placed successfully!";
+
+           
+            $order_completed = true;
+            $order = null;
+            $order_items = [];
         }
     }
 }
 
-// Fetch order items
-$itemsQuery = $pdo->prepare("
-    SELECT oi.*, i.name, i.price, i.photos as image_url
-    FROM order_items oi
-    JOIN items i ON oi.item_id = i.id
-    WHERE oi.order_id = ?
-");
-$itemsQuery->execute([$order_id]);
-$order_items = $itemsQuery->fetchAll(PDO::FETCH_ASSOC);
+// Fetch order items ONLY if order still active
+$order_items = [];
+if ($order && !$order_completed) {
+    $itemsQuery = $pdo->prepare("
+        SELECT oi.*, i.name, i.price, i.photos as image_url
+        FROM order_items oi
+        JOIN items i ON oi.item_id = i.id
+        WHERE oi.order_id = ?
+    ");
+    $itemsQuery->execute([$order['id']]);
+    $order_items = $itemsQuery->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Calculate totals
 $subtotal = 0;
@@ -103,6 +123,7 @@ $delivery_fee = 5.00;
 $discount = 0.00;
 $total = $subtotal + $delivery_fee - $discount;
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
