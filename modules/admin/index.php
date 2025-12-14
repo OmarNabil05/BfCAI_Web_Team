@@ -601,68 +601,6 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
             </div>
         </div>
-
-        <!-- Recent Users Table -->
-        <div class="data-table">
-            <h5><i class="bi bi-people"></i> Recent Users</h5>
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Role</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while($user = $recent_users->fetch_assoc()): ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="user-avatar">
-                                        <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 500;">
-                                            <?php echo htmlspecialchars($user['name']); ?>
-                                        </div>
-                                        <small style="color: var(--text-muted);">ID: <?php echo $user['id']; ?></small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <?php echo htmlspecialchars($user['email']); ?>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">
-                                    <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Active
-                                </span>
-                            </td>
-                            <td>
-                                <?php if($user['role'] == 1): ?>
-                                    <span class="badge bg-warning">
-                                        <i class="bi bi-shield-check"></i> Admin
-                                    </span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-person"></i> Customer
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center">
-                                <a href="users.php" class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- Quick Actions -->
         <div class="quick-actions">
             <a href="users.php" class="quick-action-card">
