@@ -1,12 +1,24 @@
 // Toggle sidebar function for mobile
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
+    const sidebar = document. getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
-    const backdrop = document.getElementById('sidebarBackdrop');
+    const backdrop = document. getElementById('sidebarBackdrop');
     
-    sidebar.classList.toggle('show');
-    if (backdrop) {
-        backdrop.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
+    if (!sidebar) return; // Safety check
+    
+    // For mobile
+    if (window.innerWidth <= 992) {
+        sidebar.classList.toggle('show');
+        if (backdrop) {
+            backdrop.style.display = sidebar. classList.contains('show') ? 'block' : 'none';
+        }
+    } 
+    // For desktop
+    else {
+        sidebar.classList.toggle('hidden');
+        if (mainContent) {
+            mainContent. classList.toggle('expanded');
+        }
     }
 }
 
@@ -18,10 +30,12 @@ document.addEventListener('click', function(event) {
     if (window.innerWidth <= 992 && 
         sidebar &&
         !sidebar.contains(event.target) && 
-        !event.target.closest('.menu-toggle')) {
+        !event.target.closest('.menu-toggle') &&
+        !event.target.classList.contains('modal') && // Don't interfere with modals
+        !event.target. closest('.modal')) { // Don't interfere with modal content
         sidebar.classList.remove('show');
         if (backdrop) {
-            backdrop.style.display = 'none';
+            backdrop.style. display = 'none';
         }
     }
 });
@@ -29,7 +43,7 @@ document.addEventListener('click', function(event) {
 // Close sidebar on escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        const sidebar = document.getElementById('sidebar');
+        const sidebar = document. getElementById('sidebar');
         const backdrop = document.getElementById('sidebarBackdrop');
         
         if (sidebar) {

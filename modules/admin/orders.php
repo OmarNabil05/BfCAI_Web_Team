@@ -266,7 +266,8 @@ $completed_result = $conn->query($completed_sql);
         }
     </script>
     
-    <!-- Bootstrap JS Bundle -->\n    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js\"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Admin Scripts -->
     <script src="components/scripts.js"></script>
 </body>
