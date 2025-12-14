@@ -24,245 +24,11 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Admin Sidebar Styles -->
+    <link rel="stylesheet" href="components/styles.css">
     
     <style>
-        :root {
-            --dark-bg: #1a1a1a;
-            --card-bg: #242424;
-            --sidebar-bg: #0f0f0f;
-            --gold: #f0c040;
-            --border-color: #333;
-            --text-light: #f0f0f0;
-            --text-muted: #b0b0b0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            padding-top: 20px;
-            transition: left 0.3s;
-            border-right: 1px solid var(--border-color);
-            z-index: 1000;
-        }
-
-        .sidebar.hidden {
-            left: -250px;
-        }
-
-        .sidebar .brand {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar .nav-link {
-            color: var(--text-muted);
-            padding: 12px 20px;
-            margin: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: var(--card-bg);
-            color: var(--gold);
-        }
-
-        .sidebar .nav-link.active {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s;
-            min-height: 100vh;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        /* Custom Bootstrap Overrides */
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-
-        .card-header {
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--gold);
-        }
-
-        .table {
-            color: var(--text-light);
-            background-color: var(--card-bg);
-        }
-
-        .table thead th {
-            background-color: var(--sidebar-bg);
-            color: var(--gold);
-            border-color: var(--border-color);
-        }
-
-        .table tbody td {
-            border-color: var(--border-color);
-            background-color: var(--card-bg);
-        }
-
-        .table tbody tr:hover {
-            background-color: var(--sidebar-bg);
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        /* Custom Buttons */
-        .btn-gold {
-            background-color: transparent;
-            color: var(--gold);
-            border: 2px solid var(--gold);
-            font-weight: 600;
-        }
-
-        .btn-gold:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-            border-color: var(--gold);
-        }
-
-        .btn-outline-warning {
-            border-color: #ffd43b;
-            color: #ffd43b;
-        }
-
-        .btn-outline-warning:hover {
-            background-color: #ffd43b;
-            color: var(--dark-bg);
-        }
-
-        .btn-outline-danger {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .btn-outline-danger:hover {
-            background-color: #ff6b6b;
-            color: white;
-        }
-
-        /* Badge Styles */
-        .badge {
-            font-weight: 600;
-            padding: 6px 12px;
-        }
-
-        /* Modal Customization */
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-
-        .modal-title {
-            color: var(--gold);
-        }
-
-        .btn-close {
-            filter: invert(1);
-        }
-
-        /* Form Controls */
-        .form-control, .form-select {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            border: 2px solid var(--gold);
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--card-bg);
-            color: var(--text-light);
-            border-color: white;
-            box-shadow: 0 0 0 0.25rem rgba(240, 192, 64, 0.25);
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        /* Alerts */
-        .alert-success {
-            background-color: #1f2d1f;
-            color: #51cf66;
-            border-color: #51cf66;
-        }
-
-        .alert-danger {
-            background-color: #2d1f1f;
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        /* Top Navigation Bar */
-        .top-navbar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-        }
-
-        .menu-toggle {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 20px;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .menu-toggle:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
+        /* Page specific styles only */
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -281,32 +47,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="bi bi-shop"></i> foodie
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link" href="index.php">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-            <a class="nav-link active" href="users.php">
-                <i class="bi bi-people"></i> Users
-            </a>
-            <a class="nav-link" href="products.php">
-                <i class="bi bi-box-seam"></i> Food Items
-            </a>
-            <a class="nav-link" href="categories.php">
-                <i class="bi bi-tags"></i> Categories
-            </a>
-            <a class="nav-link" href="orders.php">
-                <i class="bi bi-cart-check"></i> Orders
-            </a>
-            <a class="nav-link" href="../auth/logout.php">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </nav>
-    </div>
+    <?php include 'components/sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
@@ -521,11 +262,12 @@ $result = $conn->query($sql);
             new bootstrap.Modal(document.getElementById('editUserModal')).show();
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-            document.getElementById('mainContent').classList.toggle('expanded');
-        }
     </script>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Admin Scripts -->
+    <script src="components/scripts.js"></script>
 </body>
 </html>
 <?php $conn->close(); ?>
