@@ -16,6 +16,7 @@ FROM orders o
 LEFT JOIN order_items oi ON o.id = oi.order_id
 LEFT JOIN items i ON oi.item_id = i.id
 WHERE o.user_id = ?
+AND o.status > 0
 ORDER BY o.created_at DESC
 ";
 
@@ -44,7 +45,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-$status_text = [0 => "Pending", 1 => "Preparing", 2 => "Delivered", 3 => "Cancelled"];
+$status_text = [0 => "", 1 => "Pending", 2 => "Delivered", 3 => "Cancelled"];
 $status_colors = [
     "Pending" => "text-yellow-400",
     "Preparing" => "text-blue-400",
