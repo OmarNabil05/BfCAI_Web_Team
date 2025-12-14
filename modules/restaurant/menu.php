@@ -37,11 +37,13 @@ if ($selected_category > 0) {
     @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap');
 
 body {
-      background-color: black; 
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
+                  url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920') center/cover fixed;
       color: #f0f0f0; 
       font-family: 'Josefin Sans', sans-serif;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 a{
     color: white; 
@@ -72,6 +74,17 @@ h5{
       margin: 0 auto;
       text-align: center;
       padding: 4rem 1rem 2rem 1rem;
+      background: rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(5px);
+      border-radius: 15px;
+      margin-top: 2rem;
+    }
+    
+    .menu-container h1 {
+      color: #fac564;
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(250, 197, 100, 0.5);
     }
 
     .menu-divider {
@@ -164,19 +177,24 @@ h5{
     }
 
     .product-card {
-      background-color: #1a1a1a;
-      border-radius: 10px;
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
       position: relative;
       width: 100%;
       display: flex;
       flex-direction: column;
       height: 100%;
+      border: 1px solid rgba(250, 197, 100, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
     .product-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px);
+      border-color: #fac564;
+      box-shadow: 0 8px 25px rgba(250, 197, 100, 0.3);
     }
 
     .product-image {
