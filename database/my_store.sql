@@ -93,6 +93,19 @@ INSERT INTO `items` (`id`, `name`, `photos`, `price`, `description`, `category_i
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `images`
+--
+
+CREATE TABLE images (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  mime_type VARCHAR(100) NOT NULL,
+  data LONGBLOB NOT NULL,
+  original_name VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+--
 -- Table structure for table `orders`
 --
 
@@ -214,8 +227,6 @@ ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `items`
---
 --
 -- AUTO_INCREMENT for table `categories`
 --
@@ -226,6 +237,15 @@ ALTER TABLE `items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `category_id` (`category_id`);
 
+--
+-- Indexes for table `images`
+--
+ALTER TABLE items
+  ADD COLUMN image_id INT UNSIGNED DEFAULT NULL,
+  ADD CONSTRAINT fk_items_image
+    FOREIGN KEY (image_id) REFERENCES images(id)
+    ON DELETE SET NULL ON UPDATE CASCADE;
+    
 --
 -- Indexes for table `orders`
 --

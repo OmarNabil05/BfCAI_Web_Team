@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $order_id) {
 $order_items = [];
 if ($order && !$order_completed) {
     $itemsQuery = $pdo->prepare("
-        SELECT oi.*, i.name, i.price, i.photos as image_url
+        SELECT oi.*, i.name, i.price, i.image_id
         FROM order_items oi
         JOIN items i ON oi.item_id = i.id
         WHERE oi.order_id = ?
@@ -164,8 +164,12 @@ $total = $subtotal + $delivery_fee - $discount;
                     <?php foreach ($order_items as $item): ?>
                         <div class="grid grid-cols-8 gap-4 border-b border-gray-700 pt-2 pb-4 items-center">
                             <div class="col-span-2">
+                                <?php if ($item['image_id']): ?>
                                 <div class="bg-cover bg-center w-[100px] h-[100px] rounded-[10%]" 
-                                    style="background-image: url('<?php echo htmlspecialchars($item['image_url']); ?>');"></div>
+                                    style="background-image: url('../../image.php?id=<?php echo intval($item['image_id']); ?>');"></div>
+                                <?php else: ?>
+                                <div class="bg-cover bg-center w-[100px] h-[100px] rounded-[10%] bg-gray-700"></div>
+                                <?php endif; ?>
                             </div>
                             <div class="col-span-3 px-4">
                                 <p class="font-semibold text-[12px] lg:text-[18px] "><?php echo htmlspecialchars($item['name']); ?></p>

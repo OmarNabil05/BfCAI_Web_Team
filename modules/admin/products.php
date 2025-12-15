@@ -9,11 +9,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 
 require_once '../../config/db.php';
 
+// Get selected category filter
+$selected_category = isset($_GET['category']) ? intval($_GET['category']) : 0;
+
 // Fetch all products with category names
 $sql = "SELECT items.*, categories.name as category_name 
         FROM items 
-        LEFT JOIN categories ON items.category_id = categories.id 
-        ORDER BY items.id ASC";
+        LEFT JOIN categories ON items.category_id = categories.id ";
+
+if ($selected_category > 0) {
+    $sql .= "WHERE items.category_id = $selected_category ";
+}
+
+$sql .= "ORDER BY items.id ASC";
 $result = $conn->query($sql);
 
 // Fetch all categories for the dropdown
@@ -88,11 +96,21 @@ while ($cat = $categories_result->fetch_assoc()) {
 
         <!-- Main Card -->
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0"><i class="bi bi-box-seam"></i> Product Management</h5>
-                <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
-                    Add New Product
-                </button>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select" style="width: auto;" onchange="filterByCategory(this.value)">
+                        <option value="0" <?php echo $selected_category == 0 ? 'selected' : ''; ?>>All Categories</option>
+                        <?php foreach($categories as $cat): ?>
+                            <option value="<?php echo $cat['id']; ?>" <?php echo $selected_category == $cat['id'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($cat['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
+                        Add New Product
+                    </button>
+                </div>
             </div>
            
             <?php if (isset($_GET['success'])): ?>
@@ -129,8 +147,8 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo $product['id']; ?></td>
                                     <td><?php echo htmlspecialchars($product['name']); ?></td>
                                     <td>
-                                        <?php if ($product['photos']): ?>
-                                            <img src="uploads/<?php echo htmlspecialchars($product['photos']); ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
+                                        <?php if ($product['image_id']): ?>
+                                            <img src="../../image.php?id=<?php echo $product['image_id']; ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
                                         <?php else: ?>
                                             No image
                                         <?php endif; ?>
@@ -140,7 +158,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars(substr($product['description'], 0, 50)); ?>...</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, '<?php echo addslashes($product['photos']); ?>')">
+                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, <?php echo $product['image_id'] ? $product['image_id'] : 0; ?>)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <form method="POST" action="process_product.php" style="display:inline;">
@@ -216,13 +234,13 @@ while ($cat = $categories_result->fetch_assoc()) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Product</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('editProductModal')">×</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="process_product.php" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="product_id" id="edit_product_id">
-                        <input type="hidden" name="current_photo" id="edit_current_photo">
+                        <input type="hidden" name="current_image_id" id="edit_current_image_id">
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Product Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -254,7 +272,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -271,21 +289,25 @@ while ($cat = $categories_result->fetch_assoc()) {
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function editProduct(id, name, price, description, category_id, photo) {
+        function editProduct(id, name, price, description, category_id, image_id) {
             document.getElementById('edit_product_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_price').value = price;
             document.getElementById('edit_description').value = description;
             document.getElementById('edit_category').value = category_id;
-            document.getElementById('edit_current_photo').value = photo;
+            document.getElementById('edit_current_image_id').value = image_id;
             
-            if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
+            if (image_id > 0) {
+                document.getElementById('current_photo_preview').innerHTML = '<img src="../../image.php?id=' + image_id + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }
 
             new bootstrap.Modal(document.getElementById('editProductModal')).show();
+        }
+
+        function filterByCategory(categoryId) {
+            window.location.href = 'products.php?category=' + categoryId;
         }
 
     </script>

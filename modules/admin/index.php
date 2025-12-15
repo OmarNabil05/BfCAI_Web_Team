@@ -437,11 +437,11 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
                 <div class="title">Manage Users</div>
             </a>
-            <a href="products.php" class="quick-action-card">
-                <div class="icon" style="color: var(--gold);">
-                    <i class="bi bi-box-seam-fill"></i>
+            <a href="orders.php" class="quick-action-card">
+                <div class="icon" style="color: #4ade80;">
+                    <i class="bi bi-cart-check-fill"></i>
                 </div>
-                <div class="title">Manage Food Items</div>
+                <div class="title">Manage Orders</div>
             </a>
             <a href="categories.php" class="quick-action-card">
                 <div class="icon" style="color: #c084fc;">
@@ -449,11 +449,11 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
                 <div class="title">Manage Categories</div>
             </a>
-            <a href="orders.php" class="quick-action-card">
-                <div class="icon" style="color: #4ade80;">
-                    <i class="bi bi-cart-check-fill"></i>
+            <a href="products.php" class="quick-action-card">
+                <div class="icon" style="color: var(--gold);">
+                    <i class="bi bi-box-seam-fill"></i>
                 </div>
-                <div class="title">Manage Orders</div>
+                <div class="title">Manage Food Items</div>
             </a>
         </div>
     </div>

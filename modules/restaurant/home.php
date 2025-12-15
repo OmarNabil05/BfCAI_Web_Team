@@ -64,7 +64,12 @@ $popular_items = $conn->query($popular_items_sql);
     <div class="categories-grid">
         <?php while($category = $featured_categories->fetch_assoc()): ?>
         <div class="category-card">
-            <img src="../admin/uploads/<?= htmlspecialchars($category['photo']) ?>" alt="<?= htmlspecialchars($category['name']) ?>" class="category-image">
+            <?php $image_id = $category['image_id']; ?>
+            <?php if ($image_id): ?>
+            <img src="../../image.php?id=<?= intval($image_id) ?>" alt="<?= htmlspecialchars($category['name']) ?>" class="category-image">
+            <?php else: ?>
+            <img src="../../image.php?id=0" alt="No image" class="category-image">
+            <?php endif; ?>
             <div class="category-content">
                 <h3><?= htmlspecialchars($category['name']) ?></h3>
                 <p><?= htmlspecialchars($category['description']) ?></p>
@@ -80,11 +85,12 @@ $popular_items = $conn->query($popular_items_sql);
     <div class="items-grid">
         <?php while($item = $popular_items->fetch_assoc()): ?>
         <div class="item-card">
-            <?php 
-            $photos = explode(',', $item['photos']);
-            $main_photo = trim($photos[0]);
-            ?>
-            <img src="../admin/uploads/<?= htmlspecialchars($main_photo) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-image">
+            <?php $image_id = $item['image_id']; ?>
+            <?php if ($image_id): ?>
+            <img src="../../image.php?id=<?= intval($image_id) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="item-image">
+            <?php else: ?>
+            <img src="../../image.php?id=0" alt="No image" class="item-image">
+            <?php endif; ?>
             <div class="item-content">
                 <h4><?= htmlspecialchars($item['name']) ?></h4>
                 <p><?= htmlspecialchars(substr($item['description'], 0, 80)) ?>...</p>
