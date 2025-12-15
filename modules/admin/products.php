@@ -129,8 +129,8 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo $product['id']; ?></td>
                                     <td><?php echo htmlspecialchars($product['name']); ?></td>
                                     <td>
-                                        <?php if ($product['photos']): ?>
-                                            <img src="uploads/<?php echo htmlspecialchars($product['photos']); ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
+                                        <?php if ($product['image_id']): ?>
+                                            <img src="../../image.php?id=<?php echo $product['image_id']; ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
                                         <?php else: ?>
                                             No image
                                         <?php endif; ?>
@@ -140,7 +140,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars(substr($product['description'], 0, 50)); ?>...</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, '<?php echo addslashes($product['photos']); ?>')">
+                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, <?php echo $product['image_id'] ? $product['image_id'] : 0; ?>)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <form method="POST" action="process_product.php" style="display:inline;">
@@ -222,7 +222,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="product_id" id="edit_product_id">
-                        <input type="hidden" name="current_photo" id="edit_current_photo">
+                        <input type="hidden" name="current_image_id" id="edit_current_image_id">
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Product Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -271,16 +271,16 @@ while ($cat = $categories_result->fetch_assoc()) {
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function editProduct(id, name, price, description, category_id, photo) {
+        function editProduct(id, name, price, description, category_id, image_id) {
             document.getElementById('edit_product_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_price').value = price;
             document.getElementById('edit_description').value = description;
             document.getElementById('edit_category').value = category_id;
-            document.getElementById('edit_current_photo').value = photo;
+            document.getElementById('edit_current_image_id').value = image_id;
             
-            if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
+            if (image_id > 0) {
+                document.getElementById('current_photo_preview').innerHTML = '<img src="../../image.php?id=' + image_id + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }

@@ -111,8 +111,8 @@ $result = $conn->query($sql);
                                         <td style="color: var(--text-light);"><?php echo $category['id']; ?></td>
                                         <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['name']); ?></td>
                                         <td>
-                                            <?php if ($category['photo']): ?>
-                                                <img src="uploads/<?php echo htmlspecialchars($category['photo']); ?>" alt="Category" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                                            <?php if ($category['image_id']): ?>
+                                                <img src="../../image.php?id=<?php echo intval($category['image_id']); ?>" alt="Category" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
                                             <?php else: ?>
                                                 <span class="text-muted">No image</span>
                                             <?php endif; ?>
@@ -120,7 +120,7 @@ $result = $conn->query($sql);
                                         <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['description']); ?></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                    onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', '<?php echo addslashes($category['photo']); ?>')">
+                                                    onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', <?php echo $category['image_id'] ? $category['image_id'] : 'null'; ?>)">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <form method="POST" action="process_category.php" style="display:inline;">
@@ -190,7 +190,7 @@ $result = $conn->query($sql);
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="category_id" id="edit_category_id">
-                        <input type="hidden" name="current_photo" id="edit_current_photo">
+                        <input type="hidden" name="current_image_id" id="edit_current_image_id">
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -226,14 +226,14 @@ $result = $conn->query($sql);
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function editCategory(id, name, description, photo) {
+        function editCategory(id, name, description, image_id) {
             document.getElementById('edit_category_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_description').value = description;
-            document.getElementById('edit_current_photo').value = photo;
+            document.getElementById('edit_current_image_id').value = image_id || '';
             
-            if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
+            if (image_id) {
+                document.getElementById('current_photo_preview').innerHTML = '<img src="../../image.php?id=' + image_id + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }

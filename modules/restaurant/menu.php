@@ -346,8 +346,7 @@ h5{
       <?php 
       if ($items_result && $items_result->num_rows > 0) {
           while ($item = $items_result->fetch_assoc()) {
-              $photos = $item['photos'] ? explode(',', $item['photos']) : ['placeholder.jpg'];
-              $main_photo = trim($photos[0]);
+              $image_id = $item['image_id'];
               
               $description = $item['description'];
               if (strlen($description) > 80) {
@@ -357,9 +356,15 @@ h5{
       <!-- Product: <?php echo htmlspecialchars($item['name']); ?> -->
       <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="product-card">
-          <img src="../admin/uploads/<?php echo htmlspecialchars($main_photo); ?>" 
+          <?php if ($image_id): ?>
+          <img src="../../image.php?id=<?php echo intval($image_id); ?>" 
                alt="<?php echo htmlspecialchars($item['name']); ?>" 
                class="product-image">
+          <?php else: ?>
+          <img src="../../image.php?id=0" 
+               alt="No image" 
+               class="product-image">
+          <?php endif; ?>
 
           <div class="product-info">
             <h3 class="product-name"><?php echo htmlspecialchars($item['name']); ?></h3>

@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 require_once '../../config/db.php';
 
 // File upload configuration
-$upload_dir = 'uploads/';
 $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
 $max_size = 5 * 1024 * 1024; // 5MB
 
@@ -23,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $description = trim($_POST['description']);
         
         // Handle file upload
-        $photo_name = '';
+        $image_id = null;
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
             $file_tmp = $_FILES['photo']['tmp_name'];
             $file_name = $_FILES['photo']['name'];
@@ -42,29 +41,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
             
-            // Generate unique filename
-            $photo_name = uniqid() . '_' . time() . '.' . $file_ext;
-            $upload_path = $upload_dir . $photo_name;
+            // Get MIME type
+            $mime_types = [
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif'
+            ];
+            $mime_type = $mime_types[$file_ext];
             
-            if (!move_uploaded_file($file_tmp, $upload_path)) {
+            // Read image data
+            $image_data = file_get_contents($file_tmp);
+            
+            // Insert image into database
+            $stmt = $conn->prepare("INSERT INTO images (mime_type, data, original_name) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $mime_type, $image_data, $file_name);
+            
+            if ($stmt->execute()) {
+                $image_id = $conn->insert_id;
+            } else {
                 header("Location: categories.php?error=Failed to upload photo.");
                 exit();
             }
+            $stmt->close();
         } else {
             header("Location: categories.php?error=Please select a photo.");
             exit();
         }
         
         // Insert new category
-        $stmt = $conn->prepare("INSERT INTO categories (name, photo, description) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $name, $photo_name, $description);
+        $stmt = $conn->prepare("INSERT INTO categories (name, image_id, description) VALUES (?, ?, ?)");
+        $stmt->bind_param("sis", $name, $image_id, $description);
         
         if ($stmt->execute()) {
             header("Location: categories.php?success=Category added successfully");
         } else {
-            // Delete uploaded file if database insert fails
-            if (file_exists($upload_path)) {
-                unlink($upload_path);
+            // Delete uploaded image if database insert fails
+            if ($image_id) {
+                $stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                $stmt->bind_param("i", $image_id);
+                $stmt->execute();
+                $stmt->close();
             }
             header("Location: categories.php?error=Failed to add category");
         }
@@ -75,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $category_id = intval($_POST['category_id']);
         $name = trim($_POST['name']);
         $description = trim($_POST['description']);
-        $current_photo = $_POST['current_photo'];
+        $current_image_id = !empty($_POST['current_image_id']) ? intval($_POST['current_image_id']) : null;
         
-        $photo_name = $current_photo;
+        $image_id = $current_image_id;
         
         // Handle new file upload if provided
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
@@ -98,24 +115,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
             
-            // Generate unique filename
-            $photo_name = uniqid() . '_' . time() . '.' . $file_ext;
-            $upload_path = $upload_dir . $photo_name;
+            // Get MIME type
+            $mime_types = [
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif'
+            ];
+            $mime_type = $mime_types[$file_ext];
             
-            if (move_uploaded_file($file_tmp, $upload_path)) {
-                // Delete old photo if exists
-                if ($current_photo && file_exists($upload_dir . $current_photo)) {
-                    unlink($upload_dir . $current_photo);
+            // Read image data
+            $image_data = file_get_contents($file_tmp);
+            
+            // Insert new image into database
+            $stmt = $conn->prepare("INSERT INTO images (mime_type, data, original_name) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $mime_type, $image_data, $file_name);
+            
+            if ($stmt->execute()) {
+                $new_image_id = $conn->insert_id;
+                
+                // Delete old image if exists
+                if ($current_image_id) {
+                    $stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                    $stmt->bind_param("i", $current_image_id);
+                    $stmt->execute();
                 }
+                
+                $image_id = $new_image_id;
             } else {
                 header("Location: categories.php?error=Failed to upload new photo.");
                 exit();
             }
+            $stmt->close();
         }
         
         // Update category
-        $stmt = $conn->prepare("UPDATE categories SET name = ?, photo = ?, description = ? WHERE id = ?");
-        $stmt->bind_param("sssi", $name, $photo_name, $description, $category_id);
+        $stmt = $conn->prepare("UPDATE categories SET name = ?, image_id = ?, description = ? WHERE id = ?");
+        $stmt->bind_param("sisi", $name, $image_id, $description, $category_id);
         
         if ($stmt->execute()) {
             header("Location: categories.php?success=Category updated successfully");
@@ -141,8 +177,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
         
-        // Get photo filename before deleting
-        $stmt = $conn->prepare("SELECT photo FROM categories WHERE id = ?");
+        // Get image_id before deleting
+        $stmt = $conn->prepare("SELECT image_id FROM categories WHERE id = ?");
         $stmt->bind_param("i", $category_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -154,9 +190,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("i", $category_id);
         
         if ($stmt->execute()) {
-            // Delete photo file if exists
-            if ($category && $category['photo'] && file_exists($upload_dir . $category['photo'])) {
-                unlink($upload_dir . $category['photo']);
+            // Delete image from database if exists
+            if ($category && $category['image_id']) {
+                $stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                $stmt->bind_param("i", $category['image_id']);
+                $stmt->execute();
+                $stmt->close();
             }
             header("Location: categories.php?success=Category deleted successfully");
         } else {
