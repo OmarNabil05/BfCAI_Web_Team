@@ -9,11 +9,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 
 require_once '../../config/db.php';
 
+// Get selected category filter
+$selected_category = isset($_GET['category']) ? intval($_GET['category']) : 0;
+
 // Fetch all products with category names
 $sql = "SELECT items.*, categories.name as category_name 
         FROM items 
-        LEFT JOIN categories ON items.category_id = categories.id 
-        ORDER BY items.id ASC";
+        LEFT JOIN categories ON items.category_id = categories.id ";
+
+if ($selected_category > 0) {
+    $sql .= "WHERE items.category_id = $selected_category ";
+}
+
+$sql .= "ORDER BY items.id ASC";
 $result = $conn->query($sql);
 
 // Fetch all categories for the dropdown
@@ -88,11 +96,21 @@ while ($cat = $categories_result->fetch_assoc()) {
 
         <!-- Main Card -->
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0"><i class="bi bi-box-seam"></i> Product Management</h5>
-                <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
-                    Add New Product
-                </button>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select" style="width: auto;" onchange="filterByCategory(this.value)">
+                        <option value="0" <?php echo $selected_category == 0 ? 'selected' : ''; ?>>All Categories</option>
+                        <?php foreach($categories as $cat): ?>
+                            <option value="<?php echo $cat['id']; ?>" <?php echo $selected_category == $cat['id'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($cat['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
+                        Add New Product
+                    </button>
+                </div>
             </div>
            
             <?php if (isset($_GET['success'])): ?>
@@ -286,6 +304,10 @@ while ($cat = $categories_result->fetch_assoc()) {
             }
 
             new bootstrap.Modal(document.getElementById('editProductModal')).show();
+        }
+
+        function filterByCategory(categoryId) {
+            window.location.href = 'products.php?category=' + categoryId;
         }
 
     </script>
