@@ -12,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order'])) {
     $order_id = (int) $_POST['order_id'];
 
     $sql = "UPDATE orders 
-    SET status = 4
+    SET order_status = 4
     WHERE id = ? 
       AND user_id = ?
-      AND status IN (1,2)
+      AND order_status IN (0,1)
     ";
 
     $stmt = $conn->prepare($sql);
@@ -35,7 +35,7 @@ FROM orders o
 LEFT JOIN order_items oi ON o.id = oi.order_id
 LEFT JOIN items i ON oi.item_id = i.id
 WHERE o.user_id = ?
-AND o.status > 0
+AND o.payment_status = 1
 ORDER BY o.created_at DESC
 ";
 
@@ -64,8 +64,9 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-$order_status_text = [1 => "Preparing", 2 => "In Delivery", 3 => "Delivered", 4 => "Cancelled"];
+$order_status_text = [0 => "Received", 1 => "Preparing", 2 => "In Delivery", 3 => "Delivered", 4 => "Cancelled"];
 $order_status_colors = [
+    "Received" => "text-purple-400",
     "Preparing" => "text-yellow-400",
     "In Delivery" => "text-blue-400",
     "Delivered" => "text-green-400",
@@ -147,7 +148,7 @@ $order_status_colors = [
                                 </ul>
                             </div>
                         <?php endif; ?>
-                        <?php if (in_array($data['info']['status'], [1, 2])): ?>
+                        <?php if (in_array($data['info']['order_status'], [0, 1])): ?>
 
                             <form method="POST" class="mt-4">
                                 <input type="hidden" name="order_id" value="<?= $order_id ?>">
@@ -160,7 +161,7 @@ $order_status_colors = [
                                 </button>
                             </form>
 
-                        <?php elseif ($data['info']['status'] == 4): ?>
+                        <?php elseif ($data['info']['order_status'] == 4): ?>
 
                             <span class="text-sm text-red-400 mt-4 inline-block">
                                 This order has been cancelled
