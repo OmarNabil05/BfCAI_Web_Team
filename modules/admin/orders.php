@@ -9,12 +9,20 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 
 require_once '../../config/db.php';
 
-// Fetch all orders grouped by order_status
+// Get date filter (default to today)
+$date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : 'today';
+
+// Build SQL query based on date filter
 $all_orders_sql = "SELECT orders.*, users.name as user_name, users.email as user_email 
         FROM orders 
         LEFT JOIN users ON orders.user_id = users.id 
-        WHERE orders.payment_status = 1
-        ORDER BY orders.created_at DESC";
+        WHERE orders.payment_status = 1";
+
+if ($date_filter === 'today') {
+    $all_orders_sql .= " AND DATE(orders.created_at) = CURDATE()";
+}
+
+$all_orders_sql .= " ORDER BY orders.created_at DESC";
 $all_orders_result = $conn->query($all_orders_sql);
 
 // Group orders by order_status
@@ -107,7 +115,7 @@ $status_labels = [
     <?php include 'components/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <div class="topbar">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button class="menu-toggle" onclick="toggleSidebar()">
@@ -118,6 +126,31 @@ $status_labels = [
         </div>
 
         <div class="data-table">
+        <!-- Date Filter Section -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="mb-0">
+                    <?php 
+                    if ($date_filter === 'today') {
+                        echo "Today's Orders - " . date('F d, Y');
+                    } else {
+                        echo "All Orders";
+                    }
+                    ?>
+                </h6>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm <?php echo $date_filter === 'today' ? 'btn-gold' : 'btn-outline-secondary'; ?>" 
+                        onclick="window.location.href='orders.php?date_filter=today'">
+                    Today's Orders
+                </button>
+                <button type="button" class="btn btn-sm <?php echo $date_filter === 'all' ? 'btn-gold' : 'btn-outline-secondary'; ?>" 
+                        onclick="window.location.href='orders.php?date_filter=all'">
+                    All Orders
+                </button>
+            </div>
+        </div>
+
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php echo htmlspecialchars($_GET['success']); ?>

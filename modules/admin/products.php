@@ -234,7 +234,7 @@ while ($cat = $categories_result->fetch_assoc()) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Product</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('editProductModal')">×</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="process_product.php" enctype="multipart/form-data">
                     <div class="modal-body">
@@ -272,7 +272,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
