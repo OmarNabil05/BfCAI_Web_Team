@@ -17,8 +17,8 @@ if (!isset($_POST['item_id']) || empty($_POST['item_id'])) {
 $item_id = intval($_POST['item_id']);
 $quantity = 1;
 
-// Check if there's an active order (status = 0) for this user
-$check_order = "SELECT id FROM orders WHERE user_id = ? AND status = 0 LIMIT 1";
+// Check if there's an active order (payment_status = 0) for this user
+$check_order = "SELECT id FROM orders WHERE user_id = ? AND payment_status = 0 LIMIT 1";
 $stmt = $conn->prepare($check_order);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
     $order_id = $order['id'];
 } else {
     // Create a new order
-    $insert_order = "INSERT INTO orders (user_id, status, city, address, created_at) VALUES (?, 0, '', '', NOW())";
+    $insert_order = "INSERT INTO orders (user_id, payment_status, city, address, created_at) VALUES (?, 0, '', '', NOW())";
     $stmt2 = $conn->prepare($insert_order);
     $stmt2->bind_param("i", $user_id);
     if (!$stmt2->execute()) {

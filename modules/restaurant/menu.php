@@ -37,11 +37,13 @@ if ($selected_category > 0) {
     @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@400;600;700&display=swap');
 
 body {
-      background-color: black; 
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
+                  url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920') center/cover fixed;
       color: #f0f0f0; 
       font-family: 'Josefin Sans', sans-serif;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
 a{
     color: white; 
@@ -72,6 +74,17 @@ h5{
       margin: 0 auto;
       text-align: center;
       padding: 4rem 1rem 2rem 1rem;
+      background: rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(5px);
+      border-radius: 15px;
+      margin-top: 2rem;
+    }
+    
+    .menu-container h1 {
+      color: #fac564;
+      font-size: 3.5rem;
+      font-weight: 700;
+      text-shadow: 0 0 20px rgba(250, 197, 100, 0.5);
     }
 
     .menu-divider {
@@ -164,26 +177,30 @@ h5{
     }
 
     .product-card {
-      background-color: #1a1a1a;
-      border-radius: 10px;
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
       position: relative;
       width: 100%;
       display: flex;
       flex-direction: column;
       height: 100%;
+      border: 1px solid rgba(250, 197, 100, 0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     }
 
     .product-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px);
+      border-color: #fac564;
+      box-shadow: 0 8px 25px rgba(250, 197, 100, 0.3);
     }
 
     .product-image {
       width: 100%;
       height: 250px;
       object-fit: cover;
-      border-radius: 50%;
       padding: 1rem;
       flex-shrink: 0;
       aspect-ratio: 1/1;
@@ -329,8 +346,7 @@ h5{
       <?php 
       if ($items_result && $items_result->num_rows > 0) {
           while ($item = $items_result->fetch_assoc()) {
-              $photos = $item['photos'] ? explode(',', $item['photos']) : ['placeholder.jpg'];
-              $main_photo = trim($photos[0]);
+              $image_id = $item['image_id'];
               
               $description = $item['description'];
               if (strlen($description) > 80) {
@@ -340,14 +356,16 @@ h5{
       <!-- Product: <?php echo htmlspecialchars($item['name']); ?> -->
       <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="product-card">
-          <img src="image/<?php echo htmlspecialchars($main_photo); ?>" 
+          <?php if ($image_id): ?>
+          <img src="../../image.php?id=<?php echo intval($image_id); ?>" 
                alt="<?php echo htmlspecialchars($item['name']); ?>" 
                class="product-image">
-          <div class="zoom-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </div>
+          <?php else: ?>
+          <img src="../../image.php?id=0" 
+               alt="No image" 
+               class="product-image">
+          <?php endif; ?>
+
           <div class="product-info">
             <h3 class="product-name"><?php echo htmlspecialchars($item['name']); ?></h3>
             <p class="product-description"><?php echo htmlspecialchars($description); ?></p>

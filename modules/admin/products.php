@@ -9,11 +9,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 
 require_once '../../config/db.php';
 
+// Get selected category filter
+$selected_category = isset($_GET['category']) ? intval($_GET['category']) : 0;
+
 // Fetch all products with category names
 $sql = "SELECT items.*, categories.name as category_name 
         FROM items 
-        LEFT JOIN categories ON items.category_id = categories.id 
-        ORDER BY items.id ASC";
+        LEFT JOIN categories ON items.category_id = categories.id ";
+
+if ($selected_category > 0) {
+    $sql .= "WHERE items.category_id = $selected_category ";
+}
+
+$sql .= "ORDER BY items.id ASC";
 $result = $conn->query($sql);
 
 // Fetch all categories for the dropdown
@@ -35,424 +43,11 @@ while ($cat = $categories_result->fetch_assoc()) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Admin Sidebar Styles -->
+    <link rel="stylesheet" href="components/styles.css">
     
     <style>
-        :root {
-            --dark-bg: #1a1a1a;
-            --card-bg: #242424;
-            --sidebar-bg: #0f0f0f;
-            --gold: #f0c040;
-            --border-color: #333;
-            --text-light: #f0f0f0;
-            --text-muted: #b0b0b0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            padding-top: 20px;
-            transition: left 0.3s;
-            border-right: 1px solid var(--border-color);
-            z-index: 1000;
-        }
-
-        .sidebar.hidden {
-            left: -250px;
-        }
-
-        .sidebar .brand {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar .nav-link {
-            color: var(--text-muted);
-            padding: 12px 20px;
-            margin: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: var(--card-bg);
-            color: var(--gold);
-        }
-
-        .sidebar .nav-link.active {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s;
-            min-height: 100vh;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        /* Top Navigation Bar */
-        .top-navbar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-        }
-
-        .menu-toggle {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 20px;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .menu-toggle:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        /* Custom Bootstrap Overrides */
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-
-        .card-header {
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--gold);
-        }
-
-        .table {
-            color: var(--text-light);
-        }
-
-        .table thead th {
-            background-color: var(--sidebar-bg);
-            color: var(--gold);
-            border-color: var(--border-color);
-        }
-
-        .table tbody td {
-            border-color: var(--border-color);
-        }
-
-        .table tbody tr:hover {
-            background-color: var(--sidebar-bg);
-        }
-
-        /* Custom Buttons */
-        .btn-gold {
-            background-color: transparent;
-            color: var(--gold);
-            border: 2px solid var(--gold);
-            font-weight: 600;
-        }
-
-        .btn-gold:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-            border-color: var(--gold);
-        }
-
-        /* Modal Customization */
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--border-color);
-        }
-
-        .modal-title {
-            color: var(--gold);
-        }
-
-        .btn-close {
-            filter: invert(1);
-        }
-
-        /* Form Controls */
-        .form-control, .form-select {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            border: 2px solid var(--gold);
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: var(--card-bg);
-            color: var(--text-light);
-            border-color: white;
-            box-shadow: 0 0 0 0.25rem rgba(240, 192, 64, 0.25);
-        }
-
-        .form-label {
-            color: var(--gold);
-            font-weight: 600;
-        }
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid;
-        }
-
-        .alert-success {
-            background-color: #1f2d1f;
-            color: #51cf66;
-            border-color: #51cf66;
-        }
-
-        .alert-danger {
-            background-color: #2d1f1f;
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            color: inherit;
-            font-size: 20px;
-            cursor: pointer;
-            opacity: 0.7;
-            float: right;
-        }
-
-        .btn-close:hover {
-            opacity: 1;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid;
-        }
-
-        .btn-primary {
-            background-color: transparent;
-            color: #f0c040;
-            border-color: #f0c040;
-        }
-
-        .btn-primary:hover {
-            background-color: #f0c040;
-            color: #1a1a1a;
-        }
-
-        .btn-warning {
-            background-color: transparent;
-            color: #ffd43b;
-            border-color: #ffd43b;
-        }
-
-        .btn-warning:hover {
-            background-color: #ffd43b;
-            color: #1a1a1a;
-        }
-
-        .btn-danger {
-            background-color: transparent;
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        .btn-danger:hover {
-            background-color: #ff6b6b;
-            color: #1a1a1a;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: #b0b0b0;
-            border-color: #b0b0b0;
-        }
-
-        .btn-secondary:hover {
-            background-color: #b0b0b0;
-            color: #1a1a1a;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        thead {
-            background-color: #1a1a1a;
-        }
-
-        th {
-            padding: 12px;
-            text-align: left;
-            color: #f0c040;
-            font-weight: 600;
-            border: 1px solid #333;
-        }
-
-        td {
-            padding: 12px;
-            color: #f0f0f0;
-            border: 1px solid #333;
-        }
-
-        tbody tr {
-            transition: background-color 0.2s;
-        }
-
-        tbody tr:hover {
-            background-color: #1a1a1a;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #1f1f1f;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-dialog {
-            max-width: 600px;
-            width: 90%;
-        }
-
-        .modal-content {
-            background-color: #242424;
-            border-radius: 10px;
-            border: 1px solid #333;
-        }
-
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            color: #f0c040;
-            font-size: 1.5em;
-            margin: 0;
-        }
-
-        .modal-body {
-            padding: 24px;
-            color: #f0f0f0;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .modal-footer {
-            padding: 20px 24px;
-            border-top: 1px solid #333;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #f0c040;
-        }
-
-        .form-control, .form-select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #f0c040;
-            border-radius: 5px;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            outline: none;
-            border-color: #ffffff;
-            background-color: #242424;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-        }
-
-        .mb-3 {
+        /* Page specific styles only */
             margin-bottom: 20px;
         }
 
@@ -482,32 +77,7 @@ while ($cat = $categories_result->fetch_assoc()) {
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="bi bi-shop"></i> foodie
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link" href="index.php">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-            <a class="nav-link" href="users.php">
-                <i class="bi bi-people"></i> Users
-            </a>
-            <a class="nav-link active" href="products.php">
-                <i class="bi bi-box-seam"></i> Food Items
-            </a>
-            <a class="nav-link" href="categories.php">
-                <i class="bi bi-tags"></i> Categories
-            </a>
-            <a class="nav-link" href="orders.php">
-                <i class="bi bi-cart-check"></i> Orders
-            </a>
-            <a class="nav-link" href="../auth/logout.php">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </nav>
-    </div>
+    <?php include 'components/sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
@@ -526,11 +96,21 @@ while ($cat = $categories_result->fetch_assoc()) {
 
         <!-- Main Card -->
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0"><i class="bi bi-box-seam"></i> Product Management</h5>
-                <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
-                    Add New Product
-                </button>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select" style="width: auto;" onchange="filterByCategory(this.value)">
+                        <option value="0" <?php echo $selected_category == 0 ? 'selected' : ''; ?>>All Categories</option>
+                        <?php foreach($categories as $cat): ?>
+                            <option value="<?php echo $cat['id']; ?>" <?php echo $selected_category == $cat['id'] ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($cat['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" class="btn btn-primary" onclick="openModal('addProductModal')">
+                        Add New Product
+                    </button>
+                </div>
             </div>
            
             <?php if (isset($_GET['success'])): ?>
@@ -567,8 +147,8 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo $product['id']; ?></td>
                                     <td><?php echo htmlspecialchars($product['name']); ?></td>
                                     <td>
-                                        <?php if ($product['photos']): ?>
-                                            <img src="uploads/<?php echo htmlspecialchars($product['photos']); ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
+                                        <?php if ($product['image_id']): ?>
+                                            <img src="../../image.php?id=<?php echo $product['image_id']; ?>" alt="Product" style="max-width: 50px; max-height: 50px; border-radius: 5px;">
                                         <?php else: ?>
                                             No image
                                         <?php endif; ?>
@@ -578,7 +158,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars(substr($product['description'], 0, 50)); ?>...</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, '<?php echo addslashes($product['photos']); ?>')">
+                                                onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', '<?php echo $product['price']; ?>', '<?php echo addslashes($product['description']); ?>', <?php echo $product['category_id']; ?>, <?php echo $product['image_id'] ? $product['image_id'] : 0; ?>)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <form method="POST" action="process_product.php" style="display:inline;">
@@ -654,13 +234,13 @@ while ($cat = $categories_result->fetch_assoc()) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Product</h5>
-                    <button type="button" class="btn-close" onclick="closeModal('editProductModal')">×</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="process_product.php" enctype="multipart/form-data">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="product_id" id="edit_product_id">
-                        <input type="hidden" name="current_photo" id="edit_current_photo">
+                        <input type="hidden" name="current_image_id" id="edit_current_image_id">
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Product Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -692,7 +272,7 @@ while ($cat = $categories_result->fetch_assoc()) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -709,16 +289,16 @@ while ($cat = $categories_result->fetch_assoc()) {
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function editProduct(id, name, price, description, category_id, photo) {
+        function editProduct(id, name, price, description, category_id, image_id) {
             document.getElementById('edit_product_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_price').value = price;
             document.getElementById('edit_description').value = description;
             document.getElementById('edit_category').value = category_id;
-            document.getElementById('edit_current_photo').value = photo;
+            document.getElementById('edit_current_image_id').value = image_id;
             
-            if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
+            if (image_id > 0) {
+                document.getElementById('current_photo_preview').innerHTML = '<img src="../../image.php?id=' + image_id + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }
@@ -726,24 +306,19 @@ while ($cat = $categories_result->fetch_assoc()) {
             new bootstrap.Modal(document.getElementById('editProductModal')).show();
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-            document.getElementById('mainContent').classList.toggle('expanded');
+        function filterByCategory(categoryId) {
+            window.location.href = 'products.php?category=' + categoryId;
         }
+
     </script>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Admin Scripts -->
+    <script src="components/scripts.js"></script>
 </body>
 </html>
-<?php $conn->close(); ?>
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
-            }
-        }
     </script>
 </body>
 </html>

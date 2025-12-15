@@ -24,430 +24,11 @@ $result = $conn->query($sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Admin Sidebar Styles -->
+    <link rel="stylesheet" href="components/styles.css">
     
     <style>
-        :root {
-            --dark-bg: #1a1a1a;
-            --card-bg: #242424;
-            --sidebar-bg: #0f0f0f;
-            --gold: #f0c040;
-            --border-color: #333;
-            --text-light: #f0f0f0;
-            --text-muted: #b0b0b0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            padding-top: 20px;
-            transition: left 0.3s;
-            border-right: 1px solid var(--border-color);
-            z-index: 1000;
-        }
-
-        .sidebar.hidden {
-            left: -250px;
-        }
-
-        .sidebar .brand {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .sidebar .nav-link {
-            color: var(--text-muted);
-            padding: 12px 20px;
-            margin: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: block;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: var(--card-bg);
-            color: var(--gold);
-        }
-
-        .sidebar .nav-link.active {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s;
-            min-height: 100vh;
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-        }
-
-        /* Top Navigation Bar */
-        .top-navbar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-        }
-
-        .menu-toggle {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 20px;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .menu-toggle:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        /* Custom Bootstrap Overrides */
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-
-        .card-header {
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid var(--border-color);
-            color: var(--gold);
-        }
-
-        .table {
-            color: var(--text-light);
-            background-color: var(--card-bg);
-        }
-
-        .table thead th {
-            background-color: var(--sidebar-bg);
-            color: var(--gold);
-            border-color: var(--border-color);
-        }
-
-        .table tbody td {
-            border-color: var(--border-color);
-            background-color: var(--card-bg);
-        }
-
-        .table tbody tr:hover {
-            background-color: var(--sidebar-bg);
-        }
-
-         .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-        
-        .menu-toggle:hover {
-            background-color: #f0c040;
-            color: #1a1a1a;
-        }
-
-        .topbar {
-            background-color: #242424;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .topbar h4 {
-            color: #f0f0f0;
-            margin: 0;
-        }
-
-        .data-table {
-            background-color: #242424;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #333;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .header-row h2 {
-            color: #f0c040;
-            margin: 0;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid;
-        }
-
-        .alert-success {
-            background-color: #1f2d1f;
-            color: #51cf66;
-            border-color: #51cf66;
-        }
-
-        .alert-danger {
-            background-color: #2d1f1f;
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            color: inherit;
-            font-size: 20px;
-            cursor: pointer;
-            opacity: 0.7;
-            float: right;
-        }
-
-        .btn-close:hover {
-            opacity: 1;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid;
-        }
- /* Custom Buttons */
-        .btn-gold {
-            background-color: transparent;
-            color: var(--gold);
-            border: 2px solid var(--gold);
-            font-weight: 600;
-        }
-
-        .btn-gold:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-            border-color: var(--gold);
-        }
-        .btn-primary {
-            background-color: transparent;
-            color: #f0c040;
-            border-color: #f0c040;
-        }
-
-        .btn-primary:hover {
-            background-color: #f0c040;
-            color: #1a1a1a;
-        }
-
-        .btn-warning {
-            background-color: transparent;
-            color: #ffd43b;
-            border-color: #ffd43b;
-        }
-
-        .btn-warning:hover {
-            background-color: #ffd43b;
-            color: #1a1a1a;
-        }
-
-        .btn-danger {
-            background-color: transparent;
-            color: #ff6b6b;
-            border-color: #ff6b6b;
-        }
-
-        .btn-danger:hover {
-            background-color: #ff6b6b;
-            color: #1a1a1a;
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: #b0b0b0;
-            border-color: #b0b0b0;
-        }
-
-        .btn-secondary:hover {
-            background-color: #b0b0b0;
-            color: #1a1a1a;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        thead {
-            background-color: #1a1a1a;
-        }
-
-        th {
-            padding: 12px;
-            text-align: left;
-            color: #f0c040;
-            font-weight: 600;
-            border: 1px solid #333;
-        }
-
-        td {
-            padding: 12px;
-            color: #f0f0f0;
-            border: 1px solid #333;
-        }
-
-        tbody tr {
-            transition: background-color 0.2s;
-        }
-
-        tbody tr:hover {
-            background-color: #1a1a1a;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #1f1f1f;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-dialog {
-            max-width: 600px;
-            width: 90%;
-        }
-
-        .modal-content {
-            background-color: #242424;
-            border-radius: 10px;
-            border: 1px solid #333;
-        }
-
-        .modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            color: #f0c040;
-            font-size: 1.5em;
-            margin: 0;
-        }
-
-        .modal-body {
-            padding: 24px;
-            color: #f0f0f0;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .modal-footer {
-            padding: 20px 24px;
-            border-top: 1px solid #333;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #f0c040;
-        }
-
-        .form-control, .form-select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #f0c040;
-            border-radius: 5px;
-            background-color: #1a1a1a;
-            color: #f0f0f0;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            outline: none;
-            border-color: #ffffff;
-            background-color: #242424;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-        }
-
-        .mb-3 {
-            margin-bottom: 20px;
-        }
+        /* Page specific styles only */
 
         @media (max-width: 768px) {
             .sidebar {
@@ -475,32 +56,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="bi bi-shop"></i> foodie
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link" href="index.php">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-            <a class="nav-link" href="users.php">
-                <i class="bi bi-people"></i> Users
-            </a>
-            <a class="nav-link" href="products.php">
-                <i class="bi bi-box-seam"></i> Food Items
-            </a>
-            <a class="nav-link active" href="categories.php">
-                <i class="bi bi-tags"></i> Categories
-            </a>
-            <a class="nav-link" href="orders.php">
-                <i class="bi bi-cart-check"></i> Orders
-            </a>
-            <a class="nav-link" href="../auth/logout.php">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </nav>
-    </div>
+    <?php include 'components/sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
@@ -555,8 +111,8 @@ $result = $conn->query($sql);
                                         <td style="color: var(--text-light);"><?php echo $category['id']; ?></td>
                                         <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['name']); ?></td>
                                         <td>
-                                            <?php if ($category['photo']): ?>
-                                                <img src="uploads/<?php echo htmlspecialchars($category['photo']); ?>" alt="Category" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                                            <?php if ($category['image_id']): ?>
+                                                <img src="../../image.php?id=<?php echo intval($category['image_id']); ?>" alt="Category" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
                                             <?php else: ?>
                                                 <span class="text-muted">No image</span>
                                             <?php endif; ?>
@@ -564,7 +120,7 @@ $result = $conn->query($sql);
                                         <td style="color: var(--text-light);"><?php echo htmlspecialchars($category['description']); ?></td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                    onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', '<?php echo addslashes($category['photo']); ?>')">
+                                                    onclick="editCategory(<?php echo $category['id']; ?>, '<?php echo addslashes($category['name']); ?>', '<?php echo addslashes($category['description']); ?>', <?php echo $category['image_id'] ? $category['image_id'] : 'null'; ?>)">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <form method="POST" action="process_category.php" style="display:inline;">
@@ -634,7 +190,7 @@ $result = $conn->query($sql);
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="category_id" id="edit_category_id">
-                        <input type="hidden" name="current_photo" id="edit_current_photo">
+                        <input type="hidden" name="current_image_id" id="edit_current_image_id">
                         <div class="mb-3">
                             <label for="edit_name" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
@@ -670,24 +226,19 @@ $result = $conn->query($sql);
             document.getElementById(modalId).classList.remove('show');
         }
 
-        function editCategory(id, name, description, photo) {
+        function editCategory(id, name, description, image_id) {
             document.getElementById('edit_category_id').value = id;
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_description').value = description;
-            document.getElementById('edit_current_photo').value = photo;
+            document.getElementById('edit_current_image_id').value = image_id || '';
             
-            if (photo) {
-                document.getElementById('current_photo_preview').innerHTML = '<img src="uploads/' + photo + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
+            if (image_id) {
+                document.getElementById('current_photo_preview').innerHTML = '<img src="../../image.php?id=' + image_id + '" alt="Current" style="max-width: 100px; max-height: 100px; border-radius: 5px;">';
             } else {
                 document.getElementById('current_photo_preview').innerHTML = 'No image';
             }
 
             openModal('editCategoryModal');
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-            document.getElementById('mainContent').classList.toggle('expanded');
         }
 
         // Close modal when clicking outside
@@ -700,6 +251,8 @@ $result = $conn->query($sql);
     
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Admin Scripts -->
+    <script src="components/scripts.js"></script>
 </body>
 </html>
 <?php $conn->close(); ?>

@@ -10,9 +10,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 require_once '../../config/db.php';
 
 // File upload configuration
-$upload_dir = 'uploads/';
 $allowed_types = array('jpg', 'jpeg', 'png', 'gif');
 $max_size = 5 * 1024 * 1024; // 5MB
+
+// Mime type mapping
+$mime_types = array(
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'png' => 'image/png',
+    'gif' => 'image/gif'
+);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $action = $_POST['action'];
@@ -24,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $category_id = intval($_POST['category_id']);
         $description = trim($_POST['description']);
         
-        // Handle file upload
-        $photo_name = '';
+        // Handle file upload to database
+        $image_id = null;
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
             $file_tmp = $_FILES['photo']['tmp_name'];
             $file_name = $_FILES['photo']['name'];
@@ -44,29 +51,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
             
-            // Generate unique filename
-            $photo_name = uniqid() . '_' . time() . '.' . $file_ext;
-            $upload_path = $upload_dir . $photo_name;
+            // Read image data
+            $image_data = file_get_contents($file_tmp);
+            $mime_type = $mime_types[$file_ext];
             
-            if (!move_uploaded_file($file_tmp, $upload_path)) {
-                header("Location: products.php?error=Failed to upload photo.");
+            // Insert image into database
+            $img_stmt = $conn->prepare("INSERT INTO images (mime_type, data, original_name) VALUES (?, ?, ?)");
+            $img_stmt->bind_param("sss", $mime_type, $image_data, $file_name);
+            
+            if (!$img_stmt->execute()) {
+                header("Location: products.php?error=Failed to save image to database.");
                 exit();
             }
+            
+            $image_id = $img_stmt->insert_id;
+            $img_stmt->close();
         } else {
             header("Location: products.php?error=Please select a photo.");
             exit();
         }
         
-        // Insert new product
-        $stmt = $conn->prepare("INSERT INTO items (name, photos, price, description, category_id) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdsi", $name, $photo_name, $price, $description, $category_id);
+        // Insert new product with image_id
+        $stmt = $conn->prepare("INSERT INTO items (name, price, description, category_id, image_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sdsii", $name, $price, $description, $category_id, $image_id);
         
         if ($stmt->execute()) {
             header("Location: products.php?success=Product added successfully");
         } else {
-            // Delete uploaded file if database insert fails
-            if (file_exists($upload_path)) {
-                unlink($upload_path);
+            // Delete image from DB if product insert fails
+            if ($image_id) {
+                $del_stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                $del_stmt->bind_param("i", $image_id);
+                $del_stmt->execute();
+                $del_stmt->close();
             }
             header("Location: products.php?error=Failed to add product");
         }
@@ -79,9 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $price = floatval($_POST['price']);
         $category_id = intval($_POST['category_id']);
         $description = trim($_POST['description']);
-        $current_photo = $_POST['current_photo'];
+        $current_image_id = isset($_POST['current_image_id']) ? intval($_POST['current_image_id']) : null;
         
-        $photo_name = $current_photo;
+        $image_id = $current_image_id;
         
         // Handle new file upload if provided
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] == 0) {
@@ -102,24 +119,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 exit();
             }
             
-            // Generate unique filename
-            $photo_name = uniqid() . '_' . time() . '.' . $file_ext;
-            $upload_path = $upload_dir . $photo_name;
+            // Read image data
+            $image_data = file_get_contents($file_tmp);
+            $mime_type = $mime_types[$file_ext];
             
-            if (move_uploaded_file($file_tmp, $upload_path)) {
-                // Delete old photo if exists
-                if ($current_photo && file_exists($upload_dir . $current_photo)) {
-                    unlink($upload_dir . $current_photo);
+            // Insert new image into database
+            $img_stmt = $conn->prepare("INSERT INTO images (mime_type, data, original_name) VALUES (?, ?, ?)");
+            $img_stmt->bind_param("sss", $mime_type, $image_data, $file_name);
+            
+            if ($img_stmt->execute()) {
+                $image_id = $img_stmt->insert_id;
+                
+                // Delete old image if exists
+                if ($current_image_id) {
+                    $del_stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                    $del_stmt->bind_param("i", $current_image_id);
+                    $del_stmt->execute();
+                    $del_stmt->close();
                 }
             } else {
-                header("Location: products.php?error=Failed to upload new photo.");
+                header("Location: products.php?error=Failed to upload new image.");
                 exit();
             }
+            $img_stmt->close();
         }
         
         // Update product
-        $stmt = $conn->prepare("UPDATE items SET name = ?, photos = ?, price = ?, description = ?, category_id = ? WHERE id = ?");
-        $stmt->bind_param("ssdsii", $name, $photo_name, $price, $description, $category_id, $product_id);
+        $stmt = $conn->prepare("UPDATE items SET name = ?, price = ?, description = ?, category_id = ?, image_id = ? WHERE id = ?");
+        $stmt->bind_param("sdsiii", $name, $price, $description, $category_id, $image_id, $product_id);
         
         if ($stmt->execute()) {
             header("Location: products.php?success=Product updated successfully");
@@ -132,8 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Delete product
         $product_id = intval($_POST['product_id']);
         
-        // Get photo filename before deleting
-        $stmt = $conn->prepare("SELECT photos FROM items WHERE id = ?");
+        // Get image_id before deleting product
+        $stmt = $conn->prepare("SELECT image_id FROM items WHERE id = ?");
         $stmt->bind_param("i", $product_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -145,9 +172,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("i", $product_id);
         
         if ($stmt->execute()) {
-            // Delete photo file if exists
-            if ($product && $product['photos'] && file_exists($upload_dir . $product['photos'])) {
-                unlink($upload_dir . $product['photos']);
+            // Delete image from images table if exists
+            if ($product && $product['image_id']) {
+                $del_stmt = $conn->prepare("DELETE FROM images WHERE id = ?");
+                $del_stmt->bind_param("i", $product['image_id']);
+                $del_stmt->execute();
+                $del_stmt->close();
             }
             header("Location: products.php?success=Product deleted successfully");
         } else {

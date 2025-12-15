@@ -40,7 +40,13 @@ if (isset($_GET['order_id'])) {
         echo '<tr><td><strong>Email:</strong></td><td>' . htmlspecialchars($order['user_email']) . '</td></tr>';
         echo '<tr><td><strong>Phone:</strong></td><td>' . htmlspecialchars($order['phone_number']) . '</td></tr>';
         echo '<tr><td><strong>Order Date:</strong></td><td>' . date('M d, Y H:i', strtotime($order['created_at'])) . '</td></tr>';
-        echo '<tr><td><strong>Status:</strong></td><td>' . ($order['status'] == 1 ? 'Completed' : 'Pending') . '</td></tr>';
+        
+        // Display Order Status
+        $status_labels = ['Received', 'Preparing', 'In Delivery', 'Delivered', 'Cancelled'];
+        $order_status_text = $status_labels[$order['order_status']] ?? 'Unknown';
+        echo '<tr><td><strong>Order Status:</strong></td><td>' . $order_status_text . '</td></tr>';
+        
+        echo '<tr><td><strong>Payment Status:</strong></td><td>' . ($order['payment_status'] == 1 ? 'Completed' : 'Pending') . '</td></tr>';
         echo '</table>';
         echo '</div>';
         

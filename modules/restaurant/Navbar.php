@@ -23,7 +23,7 @@ if ($isLoggedIn) {
         FROM orders o
         LEFT JOIN order_items oi ON oi.order_id = o.id
         WHERE o.user_id = :uid
-        AND o.status = 0
+        AND o.payment_status = 0
     ");
     $stmt->execute(['uid' => $user_id]);
     $cart_count = (int)$stmt->fetchColumn();

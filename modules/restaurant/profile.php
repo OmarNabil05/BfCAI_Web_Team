@@ -50,7 +50,7 @@ SELECT o.id AS order_id, o.created_at, i.name AS item_name, oi.quantity
 FROM orders o
 JOIN order_items oi ON o.id = oi.order_id
 JOIN items i ON oi.item_id = i.id
-WHERE o.user_id = $user_id AND o.status = 1
+WHERE o.user_id = $user_id AND o.payment_status = 1
 ORDER BY o.created_at DESC
 ";
 $history_result = mysqli_query($conn, $history_sql);

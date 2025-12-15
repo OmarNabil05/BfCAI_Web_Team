@@ -1,32 +1,77 @@
 # My Store - College Web Project
 
-A feature-based e-commerce web application built with HTML, CSS, Bootstrap, PHP, and MySQL.
+A full-featured food delivery e-commerce web application built with HTML, CSS, Bootstrap, PHP, and MySQL.
 
 ## Project Structure
 
 ```
 Web_project/
-├── index.php                    # Homepage with feature navigation
+├── index.php                    # Landing page
+├── image.php                    # Image serving endpoint (BLOB storage)
 ├── config/
-│   ├── db.php                   # Database connection (gitignored - create locally)
-│   └── db.example.php           # Database config template
+│   └── db.php                   # Database connection
 ├── database/
-│   └── my_store.sql            # Main database schema
+│   └── my_store.sql            # Complete database schema with migrations
 ├── modules/
-│   ├── auth/                    # ✅ Authentication feature (EXAMPLE)
-│   │   ├── login.php
-│   │   ├── register.php
-│   │   ├── logout.php
-│   │   ├── process_login.php
-│   │   ├── process_register.php
-│   │   └── README.md           # Feature development guide
-│   ├── products/                # 🔄 To Do
-│   ├── cart/                    # 🔄 To Do
-│   ├── orders/                  # 🔄 To Do
-│   ├── categories/              # 🔄 To Do
-│   └── admin/                   # 🔄 To Do
+│   ├── auth/                    # ✅ Authentication System
+│   │   ├── login.php            # User login
+│   │   ├── register.php         # User registration
+│   │   ├── logout.php           # Session logout
+│   │   ├── process_login.php    # Login handler
+│   │   └── process_register.php # Registration handler
+│   ├── admin/                   # ✅ Admin Panel (Complete)
+│   │   ├── index.php            # Dashboard
+│   │   ├── users.php            # User management
+│   │   ├── products.php         # Product management with category filter
+│   │   ├── process_product.php  # Product CRUD handler
+│   │   ├── categories.php       # Category management
+│   │   ├── process_category.php # Category CRUD handler
+│   │   ├── orders.php           # Order management with date filter
+│   │   ├── process_order_status.php # Order status handler
+│   │   ├── get_order_details.php    # Order details modal
+│   │   └── components/          # Shared admin components
+│   │       ├── sidebar.php      # Admin navigation
+│   │       ├── styles.css       # Admin styling
+│   │       └── scripts.js       # Admin JavaScript
+│   └── restaurant/              # ✅ Customer Frontend
+│       ├── home.php             # Homepage with categories & popular items
+│       ├── menu.php             # Browse products
+│       └── cart.php             # Shopping cart
 └── .gitignore
 ```
+
+## Key Features
+
+### Admin Panel
+- **Dashboard** - Overview of system statistics
+- **User Management** - View and manage customer accounts
+- **Product Management**
+  - Add/Edit/Delete products with image upload
+  - Filter products by category
+  - BLOB-based image storage system
+- **Category Management**
+  - Manage product categories with images
+  - Database-stored category images
+- **Order Management**
+  - 5-stage order workflow: Received → Preparing → In Delivery → Delivered/Cancelled
+  - Date filtering (Today's Orders / All Orders)
+  - Order status tracking
+  - Detailed order view with items
+  - Payment status filtering
+
+### Customer Frontend
+- **Home Page** - Featured categories and popular items
+- **Browse Menu** - View all available food items
+- **Shopping Cart** - Add/remove items, adjust quantities
+- **Image System** - All images served from database via `image.php` endpoint
+
+### Technical Features
+- **BLOB Image Storage** - Images stored in database, not filesystem
+- **Secure Authentication** - Session-based login system
+- **Responsive Design** - Bootstrap 5 for mobile-first UI
+- **Dark Theme** - Modern dark UI with gold accents
+- **Modal Dialogs** - Bootstrap modals for forms and details
+- **Prepared Statements** - SQL injection prevention
 
 ## Getting Started
 
@@ -55,7 +100,38 @@ Web_project/
 
 ### 4. Access the Application
 
-Open in browser: `http://localhost/bfcai_web_team/`
+**Customer Frontend:** `http://localhost/Web_project/modules/restaurant/home.php`
+**Admin Panel:** `http://localhost/Web_project/modules/admin/`
+
+## Image Storage System
+
+This project uses a **database BLOB storage** approach for images instead of filesystem storage.
+
+### How It Works
+1. Images are uploaded and stored as binary data (LONGBLOB) in the `images` table
+2. Each product/category has an `image_id` foreign key referencing the images table
+3. Images are served via `image.php?id=123` endpoint with proper MIME types and caching headers
+
+### Benefits
+- No broken image paths
+- Easy backup with database dumps
+- Centralized image management
+- Automatic cleanup when items are deleted
+
+## Order Management Workflow
+
+### Order Status Flow
+```
+Received (0) → Preparing (1) → In Delivery (2) → Delivered (3)
+                                              ↘ Cancelled (4)
+```
+
+### Features
+- **Active Orders** - Received, Preparing, In Delivery shown by default
+- **Collapsible Sections** - Delivered and Cancelled orders hidden in collapsible tables
+- **Date Filter** - Toggle between Today's Orders and All Orders
+- **Status Update** - Dropdown selector updates order status instantly
+- **Payment Filter** - Only shows orders with confirmed payment (payment_status = 1)
 
 ## Working on Features (Team Members)
 
@@ -68,7 +144,7 @@ Each team member works on ONE complete feature in isolation to minimize merge co
 1. **Pick a feature** from the list:
    - Products (browse, view details, search)
    - Shopping Cart (add/remove items, update quantities)
-   - Orders (place order, view history, track status)
+   - Orders (place order, view history, track payment_status)
    - Categories (browse by category, manage categories)
    - Admin Panel (dashboard, user management)
 
@@ -144,22 +220,45 @@ See `modules/auth/` for a complete working example with:
 
 ### Tables
 - `users` - User accounts (customers and admins)
+  - Roles: 0 = Customer, 1 = Admin
 - `categories` - Product categories
-- `items` - Products/items for sale
+  - `image_id` - Foreign key to images table
+- `items` - Products/food items for sale
+  - `image_id` - Foreign key to images table
+  - `category_id` - Foreign key to categories
 - `orders` - Customer orders
+  - `order_status` - 0: Received, 1: Preparing, 2: In Delivery, 3: Delivered, 4: Cancelled
+  - `payment_status` - 0: Pending, 1: Paid
 - `order_items` - Items in each order
+- `images` - BLOB storage for all images (NEW)
+  - `mime_type` - image/jpeg, image/png, image/gif
+  - `data` - LONGBLOB binary data
+  - `original_name` - Original filename
+  - `created_at` - Upload timestamp
+
+### Recent Migrations
+- Added `images` table for BLOB storage
+- Added `image_id` column to `items` table
+- Added `image_id` column to `categories` table
+- Added `order_status` column to `orders` table
 
 See `database/my_store.sql` for complete schema.
 
 ## Test Users
 
+### Customer Account
 ```
 Email: alice@example.com
 Password: pass123
-
-Email: admin@example.com
-Password: adminpass (role: admin)
 ```
+
+### Admin Account
+```
+Email: admin@example.com
+Password: adminpass
+```
+
+**Note:** Admin users have `role = 1` in the database.
 
 ## Team Best Practices
 
@@ -176,11 +275,22 @@ Password: adminpass (role: admin)
 
 ## Technologies Used
 
-- **Frontend:** HTML5, CSS3, Bootstrap 5.3
+- **Frontend:** HTML5, CSS3, Bootstrap 5.3.2, Bootstrap Icons
 - **Backend:** PHP 8.0
 - **Database:** MySQL (MariaDB 10.4)
 - **Server:** Apache (XAMPP)
+- **Image Storage:** Database BLOB (LONGBLOB)
 - **Version Control:** Git & GitHub
+- **Architecture:** MVC-inspired modular structure
+
+## Design Patterns
+
+- **Separation of Concerns** - Processing files separate from display
+- **Prepared Statements** - All SQL queries use parameterized queries
+- **Session Management** - Secure authentication with session validation
+- **Responsive Design** - Mobile-first Bootstrap components
+- **Component Reusability** - Shared admin sidebar, styles, and scripts
+- **RESTful Endpoints** - Image serving via dedicated endpoint
 
 ## Need Help?
 
@@ -190,13 +300,25 @@ Password: adminpass (role: admin)
 
 ## Project Timeline
 
-- ✅ Database schema defined
+- ✅ Database schema defined and migrated
 - ✅ Project structure created
-- ✅ Example feature (auth) completed
-- 🔄 Team members implement remaining features
-- 🔄 Integration and testing
-- 🔄 Final presentation
+- ✅ Authentication system completed
+- ✅ Admin panel fully implemented
+  - ✅ Dashboard
+  - ✅ User management
+  - ✅ Product management with category filtering
+  - ✅ Category management
+  - ✅ Order management with workflow and date filtering
+- ✅ BLOB image storage system implemented
+- ✅ Customer frontend (Home, Menu, Cart)
+- ✅ Image endpoint for database-served images
+- ✅ Responsive design with dark theme
+- 🔄 Order tracking for customers (future)
+
+## Current Branch
+
+**Main Development:** `refactor/handle-image` - Image storage system migration
 
 ---
 
-**Remember:** Each person builds ONE complete feature (frontend + backend). This keeps work independent and reduces conflicts!
+**Project Status:** Core features complete. Admin panel fully functional with order workflow management.

@@ -32,134 +32,10 @@ $recent_users = $conn->query($recent_users_sql);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Admin Sidebar Styles -->
+    <link rel="stylesheet" href="components/styles.css">
     
     <style>
-        :root {
-            --dark-bg: #1a1a1a;
-            --card-bg: #242424;
-            --sidebar-bg: #0f0f0f;
-            --gold: #f0c040;
-            --border-color: #333;
-            --text-light: #f0f0f0;
-            --text-muted: #b0b0b0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            background-color: var(--sidebar-bg);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            padding-top: 20px;
-            transition: transform 0.3s ease;
-            border-right: 1px solid var(--border-color);
-            z-index: 1000;
-            transform: translateX(0);
-        }
-
-        .sidebar.hidden {
-            transform: translateX(-100%);
-        }
-
-        .sidebar .brand {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--gold);
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .sidebar .nav-link {
-            color: var(--text-muted);
-            padding: 12px 20px;
-            margin: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: var(--card-bg);
-            color: var(--gold);
-            text-decoration: none;
-        }
-
-        .sidebar .nav-link.active {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-            min-height: 100vh;
-            width: calc(100% - 250px);
-        }
-
-        .main-content.expanded {
-            margin-left: 0;
-            width: 100%;
-        }
-
-        /* Top Navigation Bar */
-        .top-navbar {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .menu-toggle {
-            background: transparent;
-            border: 2px solid var(--gold);
-            color: var(--gold);
-            font-size: 20px;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-        }
-
-        .menu-toggle:hover {
-            background-color: var(--gold);
-            color: var(--dark-bg);
-        }
 
         /* Stats Cards */
         .stats-card {
@@ -382,28 +258,8 @@ $recent_users = $conn->query($recent_users_sql);
             border-color: #4dabf7;
         }
 
-        /* Mobile Backdrop */
-        .sidebar-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-        }
-
         /* Responsive */
         @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            
             .main-content {
                 margin-left: 0;
                 width: 100%;
@@ -498,35 +354,7 @@ $recent_users = $conn->query($recent_users_sql);
     </style>
 </head>
 <body>
-    <!-- Mobile Backdrop -->
-    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="bi bi-shop"></i> foodie
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link active" href="index.php">
-                <i class="bi bi-speedometer2"></i> Dashboard
-            </a>
-            <a class="nav-link" href="users.php">
-                <i class="bi bi-people"></i> Users
-            </a>
-            <a class="nav-link" href="products.php">
-                <i class="bi bi-box-seam"></i> Food Items
-            </a>
-            <a class="nav-link" href="categories.php">
-                <i class="bi bi-tags"></i> Categories
-            </a>
-            <a class="nav-link" href="orders.php">
-                <i class="bi bi-cart-check"></i> Orders
-            </a>
-            <a class="nav-link" href="../auth/logout.php">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-        </nav>
-    </div>
+    <?php include 'components/sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
@@ -601,68 +429,6 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
             </div>
         </div>
-
-        <!-- Recent Users Table -->
-        <div class="data-table">
-            <h5><i class="bi bi-people"></i> Recent Users</h5>
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Role</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while($user = $recent_users->fetch_assoc()): ?>
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="user-avatar">
-                                        <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
-                                    </div>
-                                    <div>
-                                        <div style="font-weight: 500;">
-                                            <?php echo htmlspecialchars($user['name']); ?>
-                                        </div>
-                                        <small style="color: var(--text-muted);">ID: <?php echo $user['id']; ?></small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <?php echo htmlspecialchars($user['email']); ?>
-                            </td>
-                            <td>
-                                <span class="badge bg-success">
-                                    <i class="bi bi-circle-fill" style="font-size: 8px;"></i> Active
-                                </span>
-                            </td>
-                            <td>
-                                <?php if($user['role'] == 1): ?>
-                                    <span class="badge bg-warning">
-                                        <i class="bi bi-shield-check"></i> Admin
-                                    </span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">
-                                        <i class="bi bi-person"></i> Customer
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center">
-                                <a href="users.php" class="btn btn-sm btn-outline-info">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
         <!-- Quick Actions -->
         <div class="quick-actions">
             <a href="users.php" class="quick-action-card">
@@ -671,11 +437,11 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
                 <div class="title">Manage Users</div>
             </a>
-            <a href="products.php" class="quick-action-card">
-                <div class="icon" style="color: var(--gold);">
-                    <i class="bi bi-box-seam-fill"></i>
+            <a href="orders.php" class="quick-action-card">
+                <div class="icon" style="color: #4ade80;">
+                    <i class="bi bi-cart-check-fill"></i>
                 </div>
-                <div class="title">Manage Food Items</div>
+                <div class="title">Manage Orders</div>
             </a>
             <a href="categories.php" class="quick-action-card">
                 <div class="icon" style="color: #c084fc;">
@@ -683,63 +449,19 @@ $recent_users = $conn->query($recent_users_sql);
                 </div>
                 <div class="title">Manage Categories</div>
             </a>
-            <a href="orders.php" class="quick-action-card">
-                <div class="icon" style="color: #4ade80;">
-                    <i class="bi bi-cart-check-fill"></i>
+            <a href="products.php" class="quick-action-card">
+                <div class="icon" style="color: var(--gold);">
+                    <i class="bi bi-box-seam-fill"></i>
                 </div>
-                <div class="title">Manage Orders</div>
+                <div class="title">Manage Food Items</div>
             </a>
         </div>
     </div>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            
-            sidebar.classList.toggle('show');
-            backdrop.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
-        }
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            
-            if (window.innerWidth <= 992 && 
-                !sidebar.contains(event.target) && 
-                !event.target.closest('.menu-toggle')) {
-                sidebar.classList.remove('show');
-                backdrop.style.display = 'none';
-            }
-        });
-        
-        // Close sidebar on escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                const sidebar = document.getElementById('sidebar');
-                const backdrop = document.getElementById('sidebarBackdrop');
-                
-                sidebar.classList.remove('show');
-                backdrop.style.display = 'none';
-            }
-        });
-        
-        // Auto-close sidebar on window resize if it's open on mobile
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebarBackdrop');
-            
-            if (window.innerWidth > 992 && sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                backdrop.style.display = 'none';
-            }
-        });
-    </script>
+    <!-- Admin Scripts -->
+    <script src="components/scripts.js"></script>
 </body>
 </html>
 <?php $conn->close(); ?>
