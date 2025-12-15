@@ -201,7 +201,6 @@ h5{
       width: 100%;
       height: 250px;
       object-fit: cover;
-      border-radius: 50%;
       padding: 1rem;
       flex-shrink: 0;
       aspect-ratio: 1/1;
@@ -358,14 +357,10 @@ h5{
       <!-- Product: <?php echo htmlspecialchars($item['name']); ?> -->
       <div class="col-lg-4 col-md-6 col-sm-12">
         <div class="product-card">
-          <img src="image/<?php echo htmlspecialchars($main_photo); ?>" 
+          <img src="../admin/uploads/<?php echo htmlspecialchars($main_photo); ?>" 
                alt="<?php echo htmlspecialchars($item['name']); ?>" 
                class="product-image">
-          <div class="zoom-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </div>
+
           <div class="product-info">
             <h3 class="product-name"><?php echo htmlspecialchars($item['name']); ?></h3>
             <p class="product-description"><?php echo htmlspecialchars($description); ?></p>

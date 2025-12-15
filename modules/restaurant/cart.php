@@ -11,12 +11,12 @@ $pdo = new PDO("mysql:host=localhost;dbname=my_store", "root", "");
 
 // Fetch active order
 $orderQuery = $pdo->prepare("
-    SELECT o.id, o.status, o.created_at, o.city, o.address, 
+    SELECT o.id, o.payment_status, o.created_at, o.city, o.address, 
            o.user_id, SUM(oi.quantity * i.price) as subtotal
     FROM orders o
     LEFT JOIN order_items oi ON o.id = oi.order_id
     LEFT JOIN items i ON oi.item_id = i.id
-    WHERE o.user_id = ? AND o.status = 0
+    WHERE o.user_id = ? AND o.payment_status = 0
     GROUP BY o.id
     LIMIT 1
 ");
@@ -27,7 +27,7 @@ $order = $orderQuery->fetch(PDO::FETCH_ASSOC);
 // If no active order AND not completed in this request
 if (!$order && !$order_completed) {
     $createOrderQuery = $pdo->prepare("
-        INSERT INTO orders (user_id, status, created_at) 
+        INSERT INTO orders (user_id, payment_status, created_at) 
         VALUES (?, 0, NOW())
     ");
     $createOrderQuery->execute([$user_id]);
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $order_id) {
         if (!empty($city) && !empty($address)) {
             $updateOrderQuery = $pdo->prepare("
                 UPDATE orders 
-                SET status = 1, city = ?, address = ? 
+                SET payment_status = 1, city = ?, address = ? 
                 WHERE id = ? AND user_id = ?
             ");
             $updateOrderQuery->execute([$city, $address, $order_id, $user_id]);

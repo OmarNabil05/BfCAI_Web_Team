@@ -99,7 +99,9 @@ INSERT INTO `items` (`id`, `name`, `photos`, `price`, `description`, `category_i
 CREATE TABLE `orders` (
   `id` int(10) UNSIGNED NOT NULL,
   `user_id` int(10) UNSIGNED NOT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT 0,
+  `payment_status` tinyint(4) NOT NULL DEFAULT 0,
+  -- 0: Recieved, 1: Preparing, 2: In-Delivery, 3: Delivered, 4: Cancelled
+  `order_status` tinyint(4) NOT NULL DEFAULT 0,
   `city` varchar(100) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,  
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -109,17 +111,17 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `status`, `city`, `address`, `created_at`) VALUES
-(1, 1, 1,'New York', '123 Main St', '2025-12-01 10:30:00'),
-(2, 2, 1, 'Los Angeles', '456 Elm St', '2025-12-01 12:15:00'),
-(3, 4, 1, 'Chicago', '789 Oak St', '2025-12-02 14:20:00'),
-(4, 5, 1, 'Houston', '101 Pine St', '2025-12-02 16:45:00'),
-(5, 6, 0, 'Phoenix', '202 Maple St', '2025-12-03 11:00:00'),
-(6, 7, 0, 'Philadelphia', '303 Cedar St', '2025-12-03 13:30:00'),
-(7, 1, 0, 'Denver', '404 Spruce St', '2025-12-04 09:15:00'),
-(8, 3, 0, 'Seattle', '505 Birch St', '2025-12-04 15:00:00'),
-(9, 4, 0, 'Boston', '606 Walnut St', '2025-12-05 10:30:00'),
-(10, 5, 0, 'Miami', '707 Chestnut St', '2025-12-05 12:00:00');
+INSERT INTO `orders` (`id`, `user_id`, `payment_status`, `order_status`, `city`, `address`, `created_at`) VALUES
+(1, 1, 1,2,'New York', '123 Main St', '2025-12-01 10:30:00'),
+(2, 2, 1,2,'Los Angeles', '456 Elm St', '2025-12-01 12:15:00'),
+(3, 4, 1,2,'Chicago', '789 Oak St', '2025-12-02 14:20:00'),
+(4, 5, 1,2,'Houston', '101 Pine St', '2025-12-02 16:45:00'),
+(5, 6, 0,0,'Phoenix', '202 Maple St', '2025-12-03 11:00:00'),
+(6, 7, 0,0,'Philadelphia', '303 Cedar St', '2025-12-03 13:30:00'),
+(7, 1, 0,0,'Denver', '404 Spruce St', '2025-12-04 09:15:00'),
+(8, 3, 0,0,'Seattle', '505 Birch St', '2025-12-04 15:00:00'),
+(9, 4, 0,0,'Boston', '606 Walnut St', '2025-12-05 10:30:00'),
+(10, 5, 0,0,'Miami', '707 Chestnut St', '2025-12-05 12:00:00');
 
 -- --------------------------------------------------------
 

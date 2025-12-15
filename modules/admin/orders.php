@@ -9,21 +9,41 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 1) {
 
 require_once '../../config/db.php';
 
-// Fetch pending orders
-$pending_sql = "SELECT orders.*, users.name as user_name, users.email as user_email 
+// Fetch all orders grouped by order_status
+$all_orders_sql = "SELECT orders.*, users.name as user_name, users.email as user_email 
         FROM orders 
         LEFT JOIN users ON orders.user_id = users.id 
-        WHERE orders.status = 0
+        WHERE orders.payment_status = 1
         ORDER BY orders.created_at DESC";
-$pending_result = $conn->query($pending_sql);
+$all_orders_result = $conn->query($all_orders_sql);
 
-// Fetch completed orders
-$completed_sql = "SELECT orders.*, users.name as user_name, users.email as user_email 
-        FROM orders 
-        LEFT JOIN users ON orders.user_id = users.id 
-        WHERE orders.status = 1
-        ORDER BY orders.created_at DESC";
-$completed_result = $conn->query($completed_sql);
+// Group orders by order_status
+// 0: Received, 1: Preparing, 2: In delivery, 3: Delivered, 4: Cancelled
+$orders_by_status = [
+    0 => [], // Received
+    1 => [], // Preparing
+    2 => [], // In delivery
+    3 => [], // Delivered
+    4 => []  // Cancelled
+];
+
+if ($all_orders_result && $all_orders_result->num_rows > 0) {
+    while ($order = $all_orders_result->fetch_assoc()) {
+        $status = intval($order['order_status']);
+        if (isset($orders_by_status[$status])) {
+            $orders_by_status[$status][] = $order;
+        }
+    }
+}
+
+// Status labels
+$status_labels = [
+    0 => 'Received',
+    1 => 'Preparing',
+    2 => 'In Delivery',
+    3 => 'Delivered',
+    4 => 'Cancelled'
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,36 +121,41 @@ $completed_result = $conn->query($completed_sql);
         <?php if (isset($_GET['success'])): ?>
             <div class="alert alert-success">
                 <?php echo htmlspecialchars($_GET['success']); ?>
-                <button type="button" class="btn-close" onclick="this.parentElement.remove()">×</button>
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
             </div>
         <?php endif; ?>
         
         <?php if (isset($_GET['error'])): ?>
             <div class="alert alert-danger">
                 <?php echo htmlspecialchars($_GET['error']); ?>
-                <button type="button" class="btn-close" onclick="this.parentElement.remove()">×</button>
+                <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
             </div>
         <?php endif; ?>
 
-        <!-- Pending Orders -->
-        <h5>Pending Orders</h5>
+        <?php
+        // Loop through each order status and display tables
+        foreach ([0, 1, 2] as $status): // Received, Preparing, In delivery
+            $orders = $orders_by_status[$status];
+        ?>
+        <!-- <?php echo $status_labels[$status]; ?> Orders -->
+        <h5 class="mt-4"><?php echo $status_labels[$status]; ?> Orders</h5>
         <div class="table-responsive">
             <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>City</th>
-                            <th>Address</th>
-                            <th>Order Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>City</th>
+                        <th>Address</th>
+                        <th>Order Date</th>
+                        <th>Order Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
                 <tbody>
-                    <?php if ($pending_result->num_rows > 0): ?>
-                        <?php while($order = $pending_result->fetch_assoc()): ?>
+                    <?php if (count($orders) > 0): ?>
+                        <?php foreach($orders as $order): ?>
                         <tr>
                             <td><?php echo $order['id']; ?></td>
                             <td><?php echo htmlspecialchars($order['user_name']); ?></td>
@@ -141,9 +166,12 @@ $completed_result = $conn->query($completed_sql);
                             <td>
                                 <form method="POST" action="process_order_status.php" style="display:inline;">
                                     <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                    <select name="status" class="form-select" onchange="this.form.submit()">
-                                        <option value="0" selected>Pending</option>
-                                        <option value="1">Completed</option>
+                                    <select name="order_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                        <option value="0" <?php echo $order['order_status'] == 0 ? 'selected' : ''; ?>>Received</option>
+                                        <option value="1" <?php echo $order['order_status'] == 1 ? 'selected' : ''; ?>>Preparing</option>
+                                        <option value="2" <?php echo $order['order_status'] == 2 ? 'selected' : ''; ?>>In Delivery</option>
+                                        <option value="3" <?php echo $order['order_status'] == 3 ? 'selected' : ''; ?>>Delivered</option>
+                                        <option value="4" <?php echo $order['order_status'] == 4 ? 'selected' : ''; ?>>Cancelled</option>
                                     </select>
                                 </form>
                             </td>
@@ -154,66 +182,141 @@ $completed_result = $conn->query($completed_sql);
                                 </button>
                             </td>
                         </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center">No pending orders</td>
+                            <td colspan="8" class="text-center">No <?php echo strtolower($status_labels[$status]); ?> orders</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
+        <?php endforeach; ?>
 
-        <!-- Completed Orders -->
-        <h5>Completed Orders</h5>
-        <div class="table-responsive">
-            <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Email</th>
-                            <th>City</th>
-                            <th>Address</th>
-                            <th>Order Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                <tbody>
-                    <?php if ($completed_result->num_rows > 0): ?>
-                        <?php while($order = $completed_result->fetch_assoc()): ?>
-                        <tr>
-                            <td><?php echo $order['id']; ?></td>
-                            <td><?php echo htmlspecialchars($order['user_name']); ?></td>
-                            <td><?php echo htmlspecialchars($order['user_email']); ?></td>
-                            <td><?php echo htmlspecialchars($order['city']); ?></td>
-                            <td><?php echo htmlspecialchars($order['address']); ?></td>
-                            <td><?php echo date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
-                            <td>
-                                <form method="POST" action="process_order_status.php" style="display:inline;">
-                                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                    <select name="status" class="form-select" onchange="this.form.submit()">
-                                        <option value="0">Pending</option>
-                                        <option value="1" selected>Completed</option>
-                                    </select>
-                                </form>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-info" 
-                                        onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="6" class="text-center">No completed orders</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+        <!-- Delivered Orders (Collapsible) -->
+        <div class="mt-4">
+            <h5>
+                <button class="btn btn-link text-decoration-none p-0" type="button" data-bs-toggle="collapse" data-bs-target="#deliveredOrders" aria-expanded="false" aria-controls="deliveredOrders">
+                    <i class="bi bi-chevron-down"></i> Delivered Orders (<?php echo count($orders_by_status[3]); ?>)
+                </button>
+            </h5>
+            <div class="collapse" id="deliveredOrders">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>City</th>
+                                <th>Address</th>
+                                <th>Order Date</th>
+                                <th>Order Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (count($orders_by_status[3]) > 0): ?>
+                                <?php foreach($orders_by_status[3] as $order): ?>
+                                <tr>
+                                    <td><?php echo $order['id']; ?></td>
+                                    <td><?php echo htmlspecialchars($order['user_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['user_email']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['city']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['address']); ?></td>
+                                    <td><?php echo date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
+                                    <td>
+                                        <form method="POST" action="process_order_status.php" style="display:inline;">
+                                            <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                            <select name="order_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="0" <?php echo $order['order_status'] == 0 ? 'selected' : ''; ?>>Received</option>
+                                                <option value="1" <?php echo $order['order_status'] == 1 ? 'selected' : ''; ?>>Preparing</option>
+                                                <option value="2" <?php echo $order['order_status'] == 2 ? 'selected' : ''; ?>>In Delivery</option>
+                                                <option value="3" <?php echo $order['order_status'] == 3 ? 'selected' : ''; ?>>Delivered</option>
+                                                <option value="4" <?php echo $order['order_status'] == 4 ? 'selected' : ''; ?>>Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" class="text-center">No delivered orders</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancelled Orders (Collapsible) -->
+        <div class="mt-4">
+            <h5>
+                <button class="btn btn-link text-decoration-none p-0" type="button" data-bs-toggle="collapse" data-bs-target="#cancelledOrders" aria-expanded="false" aria-controls="cancelledOrders">
+                    <i class="bi bi-chevron-down"></i> Cancelled Orders (<?php echo count($orders_by_status[4]); ?>)
+                </button>
+            </h5>
+            <div class="collapse" id="cancelledOrders">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>City</th>
+                                <th>Address</th>
+                                <th>Order Date</th>
+                                <th>Order Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (count($orders_by_status[4]) > 0): ?>
+                                <?php foreach($orders_by_status[4] as $order): ?>
+                                <tr>
+                                    <td><?php echo $order['id']; ?></td>
+                                    <td><?php echo htmlspecialchars($order['user_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['user_email']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['city']); ?></td>
+                                    <td><?php echo htmlspecialchars($order['address']); ?></td>
+                                    <td><?php echo date('M d, Y H:i', strtotime($order['created_at'])); ?></td>
+                                    <td>
+                                        <form method="POST" action="process_order_status.php" style="display:inline;">
+                                            <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                            <select name="order_status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="0" <?php echo $order['order_status'] == 0 ? 'selected' : ''; ?>>Received</option>
+                                                <option value="1" <?php echo $order['order_status'] == 1 ? 'selected' : ''; ?>>Preparing</option>
+                                                <option value="2" <?php echo $order['order_status'] == 2 ? 'selected' : ''; ?>>In Delivery</option>
+                                                <option value="3" <?php echo $order['order_status'] == 3 ? 'selected' : ''; ?>>Delivered</option>
+                                                <option value="4" <?php echo $order['order_status'] == 4 ? 'selected' : ''; ?>>Cancelled</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                onclick="viewOrderDetails(<?php echo $order['id']; ?>)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" class="text-center">No cancelled orders</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         </div>
     </div>

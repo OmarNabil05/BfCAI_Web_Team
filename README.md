@@ -68,7 +68,7 @@ Each team member works on ONE complete feature in isolation to minimize merge co
 1. **Pick a feature** from the list:
    - Products (browse, view details, search)
    - Shopping Cart (add/remove items, update quantities)
-   - Orders (place order, view history, track status)
+   - Orders (place order, view history, track payment_status)
    - Categories (browse by category, manage categories)
    - Admin Panel (dashboard, user management)
 
