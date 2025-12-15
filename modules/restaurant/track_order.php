@@ -7,6 +7,25 @@ if (!$user_id) {
     header("Location:../auth/login.php");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order'])) {
+
+    $order_id = (int) $_POST['order_id'];
+
+    $sql = "UPDATE orders 
+    SET status = 4
+    WHERE id = ? 
+      AND user_id = ?
+      AND status IN (1,2)
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $order_id, $user_id);
+    $stmt->execute();
+    $stmt->close();
+
+    header("Location: track_order.php");
+    exit;
+}
 
 
 $sql = "
@@ -45,13 +64,20 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-$status_text = [0 => "", 1 => "Pending", 2 => "Delivered", 3 => "Cancelled"];
+$status_text = [
+    1 => "Pending",
+    2 => "Preparing",
+    3 => "Delivered",
+    4 => "Cancelled"
+];
+
 $status_colors = [
     "Pending" => "text-yellow-400",
     "Preparing" => "text-blue-400",
     "Delivered" => "text-green-400",
     "Cancelled" => "text-red-500"
 ];
+
 ?>
 
 <!DOCTYPE html>
@@ -127,6 +153,27 @@ $status_colors = [
                                 </ul>
                             </div>
                         <?php endif; ?>
+                        <?php if (in_array($data['info']['status'], [1, 2])): ?>
+
+                            <form method="POST" class="mt-4">
+                                <input type="hidden" name="order_id" value="<?= $order_id ?>">
+                                <button
+                                    type="submit"
+                                    name="cancel_order"
+                                    onclick="return confirm('Are you sure you want to cancel this order?')"
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+                                    Cancel Order
+                                </button>
+                            </form>
+
+                        <?php elseif ($data['info']['status'] == 4): ?>
+
+                            <span class="text-sm text-red-400 mt-4 inline-block">
+                                This order has been cancelled
+                            </span>
+
+                        <?php endif; ?>
+
 
                     </div>
                 <?php endforeach; ?>
