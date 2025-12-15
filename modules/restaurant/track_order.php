@@ -10,7 +10,7 @@ if (!$user_id) {
 
 
 $sql = "
-SELECT o.id as order_id, o.status, o.city, o.address, o.created_at,
+SELECT o.id as order_id, o.payment_status, o.city, o.address, o.created_at,
        oi.quantity, i.name as item_name
 FROM orders o
 LEFT JOIN order_items oi ON o.id = oi.order_id
@@ -30,7 +30,7 @@ $orders = [];
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $orders[$row['order_id']]['info'] = [
-            'status' => $row['status'],
+            'payment_status' => $row['payment_status'],
             'city' => $row['city'],
             'address' => $row['address'],
             'created_at' => $row['created_at']
@@ -44,8 +44,8 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-$status_text = [0 => "Pending", 1 => "Preparing", 2 => "Delivered", 3 => "Cancelled"];
-$status_colors = [
+$payment_status_text = [0 => "Pending", 1 => "Preparing", 2 => "Delivered", 3 => "Cancelled"];
+$payment_status_colors = [
     "Pending" => "text-yellow-400",
     "Preparing" => "text-blue-400",
     "Delivered" => "text-green-400",
@@ -77,7 +77,7 @@ $status_colors = [
         <?php if (!empty($orders)): ?>
             <div class="space-y-6">
                 <?php foreach ($orders as $order_id => $data):
-                    $status_name = $status_text[$data['info']['status']];
+                    $payment_status_name = $payment_status_text[$data['info']['payment_status']];
                 ?>
                     <div class="bg-[#121618] rounded-2xl p-6 shadow-lg hover:shadow-xl transition">
 
@@ -89,9 +89,9 @@ $status_colors = [
                             </div>
 
                             <div>
-                                <p class="text-sm text-gray-400">Status</p>
-                                <p class="font-bold <?= $status_colors[$status_name] ?>">
-                                    <?= $status_name ?>
+                                <p class="text-sm text-gray-400">payment_status</p>
+                                <p class="font-bold <?= $payment_status_colors[$payment_status_name] ?>">
+                                    <?= $payment_status_name ?>
                                 </p>
                             </div>
 

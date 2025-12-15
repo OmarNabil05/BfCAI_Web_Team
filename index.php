@@ -9,7 +9,7 @@ if (isset($_SESSION['user_id'])) {
         exit;
     } else {
         // Regular user - redirect to restaurant
-        header('Location: modules/restaurant/index.php');
+        header('Location: modules/restaurant/home.php');
         exit;
     }
 }

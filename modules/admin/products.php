@@ -296,14 +296,7 @@ while ($cat = $categories_result->fetch_assoc()) {
     <script src="components/scripts.js"></script>
 </body>
 </html>
-<?php $conn->close(); ?>
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
-            }
-        }
     </script>
 </body>
 </html>
