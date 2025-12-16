@@ -3,9 +3,9 @@
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="brand">
+    <a class="brand" href="../restaurant/home.php" aria-label="Go to main website">
         <i class="bi bi-shop"></i> foodie
-    </div>
+    </a>
     <nav class="nav flex-column">
         <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>" href="index.php">
             <i class="bi bi-speedometer2"></i> Dashboard

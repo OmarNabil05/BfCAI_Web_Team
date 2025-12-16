@@ -12,6 +12,7 @@ if (isset($_GET['logout']) && $_GET['logout'] == 'true') {
 // Detect logged in
 $isLoggedIn = isset($_SESSION['user_id']);
 $user_id = $isLoggedIn ? $_SESSION['user_id'] : null;
+$isAdmin = $isLoggedIn && (int)($_SESSION['user_role'] ?? 0) === 1;
 
 // Default cart count
 $cart_count = 0;
@@ -51,6 +52,11 @@ if ($isLoggedIn) {
 
   <div class="hidden md:flex gap-6 items-center text-white font-bold text-[16px]">
     <?php if ($isLoggedIn): ?>
+      <?php if ($isAdmin): ?>
+        <a href="../admin/index.php" class="py-2 px-5 rounded-full bg-[#fac564] text-black font-bold hover:opacity-90 transition">
+          Dashboard
+        </a>
+      <?php endif; ?>
       <!-- Cart -->
       <a href="cart.php" class="relative hover:text-[#fac564] transition">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
@@ -98,6 +104,11 @@ if ($isLoggedIn) {
 
   <div class="mt-6 flex flex-col gap-4">
     <?php if ($isLoggedIn): ?>
+      <?php if ($isAdmin): ?>
+        <a href="../admin/index.php" class="py-2 rounded-full bg-[#fac564] text-black font-bold text-center hover:opacity-90 transition">
+          Dashboard
+        </a>
+      <?php endif; ?>
       <a href="cart.php" class="flex items-center gap-2 text-white hover:text-[#fac564]">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 100 6 3 3 0 000-6zm9.75 0a3 3 0 110 6 3 3 0 010-6zM7.5 14.25h9.75m-12.75-9l1.5 6h12.708c.967 0 1.72-.88 1.568-1.836l-.75-4.5A1.688 1.688 0 0017.864 4.5H4.5z"/>

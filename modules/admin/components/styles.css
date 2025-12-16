@@ -50,6 +50,11 @@ body {
     color: var(--gold);
     border-bottom: 1px solid var(--border-color);
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
 }
 
 .sidebar .nav-link {
