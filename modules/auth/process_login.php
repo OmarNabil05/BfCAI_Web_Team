@@ -37,10 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Redirect based on role
             if ($user['role'] == 1) {
                 // Admin user
-                header("Location: ../../index.php?success=Welcome Admin " . $user['name']);
+                header("Location: ../../index.php");
             } else {
                 // Regular user
-                header("Location: ../restaurant/menu.php?success=Welcome " . $user['name']);
+                header("Location: ../restaurant/home.php");
             }
             exit();
         } else {

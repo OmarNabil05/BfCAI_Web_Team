@@ -53,8 +53,13 @@ if ($isLoggedIn) {
   <div class="hidden md:flex gap-6 items-center text-white font-bold text-[16px]">
     <?php if ($isLoggedIn): ?>
       <?php if ($isAdmin): ?>
-        <a href="../admin/index.php" class="py-2 px-5 rounded-full bg-[#fac564] text-black font-bold hover:opacity-90 transition">
-          Dashboard
+        <a href="../admin/index.php" class="py-2 px-5 rounded-full bg-[#fac564] text-black font-bold hover:opacity-90 transition flex items-center justify-center" aria-label="Admin dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <path d="M4 20V10" />
+            <path d="M10 20V4" />
+            <path d="M16 20v-8" />
+            <path d="M22 20V8" />
+          </svg>
         </a>
       <?php endif; ?>
       <!-- Cart -->
@@ -103,10 +108,15 @@ if ($isLoggedIn) {
   <a href="#" class="text-white font-bold text-lg hover:text-[#fac564]">Contact</a>
 
   <div class="mt-6 flex flex-col gap-4">
-    <?php if ($isLoggedIn): ?>
+    <?php if ($isLoggedIn): ?>  
       <?php if ($isAdmin): ?>
-        <a href="../admin/index.php" class="py-2 rounded-full bg-[#fac564] text-black font-bold text-center hover:opacity-90 transition">
-          Dashboard
+        <a href="../admin/index.php" class="py-2 rounded-full bg-[#fac564] text-black font-bold text-center hover:opacity-90 transition flex items-center justify-center" aria-label="Admin dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+            <path d="M4 20V10" />
+            <path d="M10 20V4" />
+            <path d="M16 20v-8" />
+            <path d="M22 20V8" />
+          </svg>
         </a>
       <?php endif; ?>
       <a href="cart.php" class="flex items-center gap-2 text-white hover:text-[#fac564]">
