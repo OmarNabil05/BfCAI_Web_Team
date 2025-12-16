@@ -1,14 +1,21 @@
 <?php
+session_start();
 require_once '../../config/db.php';
-// session_start();
 
-// AJAX POST request for profile update
+// AJAX POST request for profile update (must return JSON only)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
     $user_id = $_SESSION["user_id"] ?? 0;
     $name = trim(mysqli_real_escape_string($conn, $_POST['username']));
     $phone = trim(mysqli_real_escape_string($conn, $_POST['phone']));
     $email = trim(mysqli_real_escape_string($conn, $_POST['email']));
     $response = [];
+
+    if ($user_id <= 0) {
+        $response['error'] = "You must be logged in.";
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
 
     if (!preg_match("/^\d{11}$/", $phone)) {
         $response['error'] = "Phone number must be exactly 11 digits and contain only numbers.";
@@ -31,10 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 }
 
 // --- Normal page load ---
+
 include("Navbar.php");
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -83,6 +91,7 @@ $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
     <!-- Profile Form -->
     <form id="profileForm" class="card transition-all duration-300 text-white w-80 lg:w-[500px] h-96 bg-[#121618] border border-white/20 shadow-lg rounded-lg flex flex-col justify-center items-center gap-5">
         <h2 class="text-2xl lg:text-3xl transition-all duration-300 text-[#fac564]">My Profile</h2>
+        
         <div class="flex lg:gap-5 gap-3 lg:items-center lg:flex-row flex-col">
             <label for="username">Name</label>
             <input type="text" class="border px-2 border-white/20 rounded-lg w-72 py-1" name="username" value="<?php echo $user['name']; ?>" readonly>
@@ -98,7 +107,7 @@ $headers = ['Order ID', 'Created At', 'Item Name', 'Quantity'];
         <button type="button" id="editBtn" class="bg-[#fac564] lg:ms-16 w-72 rounded-lg py-1 cursor-pointer border text-black font-semibold border-white/20">Edit</button>
         <input type="hidden" name="ajax" value="1">
     </form>
-
+<h2 class="text-2xl lg:text-3xl text-[#fac564] text-center">My History</h2>
     <!-- Order History Table -->
     <div class="overflow-x-auto rounded-lg shadow-md border border-white/20 w-full max-w-6xl transition-all duration-300">
         <table class="min-w-full divide-y max-h-[500px] ">

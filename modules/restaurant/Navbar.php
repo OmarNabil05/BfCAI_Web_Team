@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_start();
+}
 $pdo = new PDO("mysql:host=localhost;dbname=my_store", "root", "");
 
 // --- LOGOUT LOGIC ---
@@ -80,6 +82,22 @@ if ($isLoggedIn) {
         </svg>
       </a>
 
+        <a href="track_order.php" class="hover:text-[#fac564] transition">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22s7-5.5 7-12a7 7 0 1 0-14 0c0 6.5 7 12 7 12z"
+            stroke="currentColor"
+            stroke-width="1.5" />
+          <circle cx="12" cy="10" r="2.5"
+            stroke="currentColor"
+            stroke-width="1.5" />
+          <path d="M3 20h6M15 20h6"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round" />
+        </svg>
+
+      </a>
       <!-- Logout -->
       <a href="menu.php?logout=true" class="hover:text-[#fac564] transition">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
