@@ -17,9 +17,7 @@ $products_count = $conn->query("SELECT COUNT(*) as count FROM items")->fetch_ass
 $categories_count = $conn->query("SELECT COUNT(*) as count FROM categories")->fetch_assoc()['count'];
 $orders_count = $conn->query("SELECT COUNT(*) as count FROM orders")->fetch_assoc()['count'];
 
-// Fetch recent users
-$recent_users_sql = "SELECT id, name, email, role FROM users ORDER BY id DESC LIMIT 8";
-$recent_users = $conn->query($recent_users_sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +52,7 @@ $recent_users = $conn->query($recent_users_sql);
                 <h4 class="mb-0">Dashboard</h4>
             </div>
             <div>
-                <span class="text-muted">Welcome, <strong style="color: var(--gold);"><?php echo htmlspecialchars($admin_name); ?></strong></span>
+                <span style="color: var(--gold);">Welcome, <strong><?php echo htmlspecialchars($admin_name); ?></strong></span>
             </div>
         </div>
 
