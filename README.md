@@ -1,4 +1,4 @@
-# My Store - College Web Project
+# Foodie - College Web Project
 
 A full-featured food delivery e-commerce web application built with HTML, CSS, Bootstrap, PHP, and MySQL. This project was developed as a college project to demonstrate full-stack web development capabilities, including database design, session management, and dynamic content rendering.
 
