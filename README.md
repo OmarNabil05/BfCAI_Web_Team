@@ -10,10 +10,10 @@ A full-featured food delivery e-commerce web application built with HTML, CSS, B
 ![Login](screenshots/login.png)
 
 **Home Page**
-![Home](screenshots/home.mp4)
+<video src="https://github.com/OmarNabil05/BfCAI_Web_Team/assets/home.mp4" controls width="600"></video>
 
 **Menu**
-![Menu](screenshots/menu.mp4)
+<video src="https://github.com/OmarNabil05/BfCAI_Web_Team/assets/menu.mp4" controls width="600"></video>
 
 **Shopping Cart**
 ![Cart](screenshots/cart.png)
